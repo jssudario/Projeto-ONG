@@ -1,6 +1,7 @@
 from fastapi import FastAPI # type: ignore
-from app.database import engine, Base
-from app.routers import animals
+from app.core.database import engine, Base
+from app.routers import animais
+import app.models  # importa __init__.py dos models e registra as tabelas
 from fastapi.middleware.cors import CORSMiddleware # type: ignore # permite que o front acesse a api
 
 # criar as tabelas no sqlite com base no models
@@ -18,8 +19,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# registra rota > animals
-app.include_router(animals.router)
+# registra rota > animais
+app.include_router(animais.router)
 
 # teste api
 @app.get("/")

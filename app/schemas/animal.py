@@ -1,5 +1,5 @@
 from datetime import date
-from pydantic import BaseModel, Field, ConfigDict # type: ignore # Field: restrições: max, min, default, etc
+from pydantic import BaseModel, Field # type: ignore # Field: restrições: max, min, default, etc
 from typing import Literal
 
 Sexo = Literal["macho", "femea"]
@@ -41,8 +41,7 @@ class AnimalUpdate(AnimalBase):
 
 class AnimalOut(AnimalBase):
     id: int
-    model_config = ConfigDict(from_attributes=True)
-    # class Config:
-    #     from_attributes = True
+    class Config:
+        from_attributes = True
 
         
