@@ -1,0 +1,11 @@
+# Ignorar ambientes virtuais e cache
+venv/
+__pycache__/
+*.pyc
+*.db
+
+# VSCode
+.vscode/
+
+# Arquivos temporários do sistema
+.DS_Store
