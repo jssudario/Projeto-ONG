@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status # type: ignore
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from app.core.database import get_db
@@ -24,7 +24,6 @@ def get_animal(animal_id: int, db: Session = Depends(get_db)):
     return animal
 
 # post, criar registro
-# VERSÃO CORRIGIDA
 @router.post("/", response_model=animal_schema.AnimalOut, status_code=status.HTTP_201_CREATED)
 def create_animal(payload: animal_schema.AnimalCreate, db: Session = Depends(get_db)): 
     animal = animal_model.Animal(**payload.model_dump()) 
