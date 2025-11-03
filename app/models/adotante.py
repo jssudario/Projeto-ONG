@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, Date, Text # importa as ferramentas
 from app.core.database import Base # importa base
+from sqlalchemy.orm import relationship
 
 class Adotante(Base):
     __tablename__ = "adotante"
@@ -11,3 +12,5 @@ class Adotante(Base):
     email = Column(String(255), nullable=False, unique=True)
     telefone = Column(String(15), nullable=False)
     endereco = Column(Text, nullable=False)
+
+    solicitacoes = relationship("Solicitacao", back_populates="adotante")

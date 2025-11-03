@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, Boolean, Date, Text # importa as ferramentas
 from app.core.database import Base # importa base
+from sqlalchemy.orm import relationship
 
 class Animal(Base):
     __tablename__ = "animal"
@@ -16,5 +17,7 @@ class Animal(Base):
     status = Column(String(15), nullable=False, default="disponivel") # disponivel, reservado, adotado
     data_entrada = Column(Date)
     observacoes = Column(Text)
+
+    solicitacoes = relationship("Solicitacao", back_populates="animal")
 
 # nullable=False torna campo obrigatório

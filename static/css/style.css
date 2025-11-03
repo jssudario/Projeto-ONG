@@ -1,4 +1,4 @@
-/* --- paleta --- */
+/* --- 1. paletas --- */
 :root {
     --color-primary-brand: #005A9C; 
     --color-primary-dark:#003E6B; 
@@ -6,7 +6,7 @@
     --color-accent-light: #FFB04C; 
 
     --color-text: #333;
-    --color-bg-light: #f4f4f4;
+    --color-bg-light: #f7f3ed;
     --color-bg-white: #fff;
     --color-border: #ddd;
 }
@@ -25,7 +25,7 @@ body {
     color: var(--color-text);
 }
 
-/* --- cabeçalho flutuante --- */
+/* --- 2. cabeçalho flutuante --- */
 header {
     position: absolute; 
     top: 0;
@@ -81,9 +81,9 @@ header {
     text-decoration: underline;
 }
 
-/* --- fullscreen/hero --- */
+/* --- 3. hero/fullscreen --- */
 .hero {
-    min-height: 100vh; /* ocupa 100% da altura da tela */
+    min-height: 100vh;
     width: 100%;
     background-color: var(--color-primary-brand);
     color: var(--color-bg-white);
@@ -129,14 +129,14 @@ header {
     transform: scale(1.05);
 }
 
-/* --- conteúdo principal, abaixo do hero --- */
+/* --- 4. quem somos --- */
 .about-us {
     width: 90%;
-    max-width: 960px;
+    max-width: 1300px;
     margin: 40px auto;
     padding: 30px;
     background-color: var(--color-bg-white);
-    border-radius: 5px;
+    border-radius: 40px;
     text-align: center;
 }
 
@@ -150,18 +150,154 @@ header {
 .about-us p {
     font-size: 1.1rem;
     line-height: 1.7;
-    max-width: 700px;
+    max-width: 800px;
     margin: 0 auto;
 }
 
-/* --- rodapé --- */
+/* --- 5. rodapé --- */
 footer {
+    background-color: var(--color-primary-brand);
+    color: var(--color-border);
+    padding: 60px 0 0 0;
+    margin-top: 40px;
+}
+
+.footer-content {
     width: 90%;
-    max-width: 960px;
-    margin: 40px auto 20px auto;
-    padding: 20px;
-    background-color: var(--color-bg-white);
-    border-radius: 5px;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+}
+
+.footer-column h4 {
+    font-family: 'Momo Trust Display', sans-serif;
+    color: var(--color-bg-white);
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+.footer-column p {
+    margin-bottom: 10px;
+    line-height: 1.7;
+}
+
+.footer-column ul {
+    list-style: none;
+}
+
+.footer-column ul li {
+    margin-bottom: 10px;
+}
+
+.footer-column a {
+    color: var(--color-border);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-column a:hover {
+    color: var(--color-bg-white);
+    text-decoration: underline;
+}
+
+.footer-bottom {
     text-align: center;
-    color: #777;
+    margin-top: 40px;
+    padding: 30px 0;
+    border-top: 1px solid var(--color-primary-dark); 
+}
+
+/* --- 6. galeria dos animais --- */
+.animal-gallery {
+    width: 90%;
+    max-width: 1300px;
+    margin: 40px auto;
+    padding: 30px;
+    /* background-color: var(--color-bg-white); */
+    border-radius: 40px;
+    text-align: center;
+}
+
+.gallery-title {
+    font-family: 'Momo Trust Display', sans-serif;
+    font-size: 2.5rem;
+    color: var(--color-primary-dark);
+    margin-bottom: 30px; 
+}
+
+.gallery-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 320px));
+    gap: 20px; 
+    justify-content: center;
+}
+
+
+/* --- 7. card animal - estilo polaroid --- */
+.animal-card {
+    background-color: #fff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); 
+    text-align: center; 
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    padding: 15px; 
+    border-radius: 20px;
+}
+
+.animal-card:hover {
+    transform: translateY(-5px) rotate(2deg);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+}
+
+.animal-card-image {
+    width: 100%; /* espaço dentro do padding */
+    height: 200px; 
+    overflow: hidden; 
+}
+
+.animal-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+    display: block;
+    border-radius: 15px;
+}
+
+.animal-card-content {
+    /* um espaço acima p/ desgrudar da foto */
+    padding-top: 15px; 
+}
+
+.animal-card h3 {
+    font-size: 1.5rem;
+    font-family: 'Momo Trust Display', sans-serif;
+    color: var(--color-primary-brand);
+    margin-bottom: 10px;
+}
+
+.animal-card p {
+    font-size: 0.9rem;
+    color: var(--color-text);
+    margin-bottom: 5px;
+}
+
+.animal-card-button {
+    display: inline-block;
+    margin-top: 15px;
+    background-color: var(--color-accent);
+    color: var(--color-bg-white);
+    padding: 8px 15px;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+}
+
+.animal-card-button:hover {
+    background-color: var(--color-accent-light);
 }

@@ -1,6 +1,6 @@
 from datetime import date
-from pydantic import BaseModel, Field # type: ignore # Field: restrições: max, min, default, etc
-from typing import Literal
+from pydantic import BaseModel, Field
+from typing import Literal, Optional
 
 Sexo = Literal["macho", "femea"]
 Porte = Literal["pequeno", "medio", "grande"]
@@ -16,7 +16,6 @@ class AnimalBase(BaseModel):
     porte: Porte
 
     # campos opcionais
-    # cadastrado e vacinado ficam com default False de padrão
     castrado: bool = False
     vacinado: bool = False
     status: str = "disponivel" # default é disponivel
@@ -39,9 +38,20 @@ class AnimalUpdate(AnimalBase):
     data_entrada: date | None = None
     observacoes: str | None = None
 
-class AnimalOut(AnimalBase):
+# ajustado AnimalOut para não herdar mais de AnimalBase e sim de BaseModel, assim flexibilizando as regras para saída de dados
+class AnimalOut(BaseModel):
     id: int
+    nome: str
+    especie: str 
+    raca: Optional[str] = None 
+    sexo: str
+    idade_meses: int
+    porte: Optional[str] = None 
+    castrado: bool
+    vacinado: bool
+    status: str
+    data_entrada: Optional[date] = None
+    observacoes: Optional[str] = None
+
     class Config:
         from_attributes = True
-
-        
