@@ -9,6 +9,10 @@ from app.models.animal import Animal
 from app.models.adotante import Adotante
 from app.models.solicitacao import Solicitacao
 from app.models.visita import Visita
+from app.models.user import User
+
+from sqladmin import Admin, ModelView
+from app.admin_auth import authentication_backend
 
 
 # criar as tabelas no sqlite com base no models
@@ -43,14 +47,22 @@ class SolicitacaoAdmin(ModelView, model=Solicitacao):
     name = "Solicitação"
     name_plural = "Solicitações"
 
+class UserAdmin(ModelView, model=User):
+    # Queremos ver o username, mas NUNCA a senha
+    column_list = [User.id, User.username] 
+    icon = "fa-solid fa-user-shield"
+    name = "Usuário"
+    name_plural = "Usuários"
+
 
 # plug do admin
-admin = Admin(app, engine)
+admin = Admin(app, engine, authentication_backend=authentication_backend)
 
 admin.add_view(AnimalAdmin)
 admin.add_view(AdotanteAdmin)
 admin.add_view(VisitaAdmin)
 admin.add_view(SolicitacaoAdmin)
+admin.add_view(UserAdmin)
 
 
 # ativa o CORS, middlewares e rotas

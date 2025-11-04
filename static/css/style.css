@@ -1,12 +1,15 @@
 /* --- 1. paletas --- */
 :root {
-    --color-primary-brand: #005A9C; 
-    --color-primary-dark:#003E6B; 
-    --color-accent:#F57F17; 
-    --color-accent-light: #FFB04C; 
+    /* --- Nova Paleta (Inspirada no Canto da Terra) --- */
+    --color-primary-brand:    #0067C2; /* hero, footer, titulos */
+    --color-primary-dark:     #004A8F; /* azul mais escuro para hover */
+    --color-accent:           #9FC12F; /* botoes */
+    --color-accent-light:     #B8D65A; /* verde mais claro para hover */
+    --color-secondary:        #E8AB00; /* barras: inicial e final */
 
+    /* --- neutros --- */
     --color-text: #333;
-    --color-bg-light: #f7f3ed;
+    --color-bg-light: #f7f3ed; /* fundo creme */
     --color-bg-white: #fff;
     --color-border: #ddd;
 }
@@ -40,7 +43,7 @@ header {
 .top-bar {
     height: 8px;
     width: 100%;
-    background-color: var(--color-accent); 
+    background-color: var(--color-secondary);
 }
 
 .main-nav {
@@ -77,8 +80,7 @@ header {
 }
 
 .main-nav nav a:hover {
-    color: var(--color-primary-dark); 
-    text-decoration: underline;
+    color: var(--color-accent); 
 }
 
 /* --- 3. hero/fullscreen --- */
@@ -145,6 +147,7 @@ header {
     font-size: 2.5rem;
     color: var(--color-primary-dark);
     margin-bottom: 20px;
+
 }
 
 .about-us p {
@@ -152,12 +155,13 @@ header {
     line-height: 1.7;
     max-width: 800px;
     margin: 0 auto;
+        text-align: justify;
 }
 
 /* --- 5. rodapé --- */
 footer {
     background-color: var(--color-primary-brand);
-    color: var(--color-border);
+    color: var(--color-bg-white);
     padding: 60px 0 0 0;
     margin-top: 40px;
 }
@@ -195,14 +199,13 @@ footer {
 }
 
 .footer-column a {
-    color: var(--color-border);
+    color: var(--color-bg-white);
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
 .footer-column a:hover {
-    color: var(--color-bg-white);
-    text-decoration: underline;
+    color: var(--color-accent);
 }
 
 .footer-bottom {
