@@ -16,9 +16,9 @@ Este projeto cria uma plataforma web funcional para ONGs de proteção animal.
 - FastAPI (API)
 - Uvicorn (Servidor)
 - SQLAlchemy (ORM)
-- **SQLAdmin** (Painel de Admin)
-- **Argon2 / Passlib** (Criptografia de senha)
-- **JOSE / JWT** (Tokens de autenticação)
+- SQLAdmin (Painel de Admin)
+- Argon2 / Passlib (Criptografia de senha)
+- JOSE / JWT (Tokens de autenticação)
 
 ### Frontend
 - HTML5, CSS3 (Variáveis CSS, Grid)
@@ -77,51 +77,82 @@ Selecione **"Open with Live Server"**.
 
 ---
 
-## Como Criar seu Primeiro Usuário Admin
+## Como Criar o Primeiro Usuário (Setup Inicial)
 
-O painel `/admin` é protegido. Para o primeiro acesso, você precisa criar um usuário manualmente:
+Para o primeiro acesso, você precisa criar um superusuário. Como o painel já vem "trancado" por padrão no código, seguimos este processo:
+
+---
 
 ### 1. Gere a Senha (Hash)
 
+Com o `venv` ativado, rode este comando no terminal para gerar um hash para sua senha (ex: `admin123`):
+
 ```bash
 python -c "from app.security import get_password_hash; print(get_password_hash('admin123'))"
-```
+````
+
+---
 
 ### 2. Copie o Hash
 
-Copie o hash que aparecer no terminal (exemplo: `$argon2id$...`).
+Copie o hash gigante que aparecer no terminal (exemplo: `$argon2id$...`).
 
-### 3. Crie o Usuário
+---
 
-Com o servidor rodando, acesse [http://localhost:8000/admin](http://localhost:8000/admin).
-Clique na aba **"Usuários"** → **"Criar"**.
+### 3. "Destranque" o Admin Temporariamente
 
-Preencha os campos:
+Abra o arquivo `app/main.py`.
 
-- `username`: admin
-- `hashed_password`: (cole o hash que você copiou)
-
-Clique em **Salvar**.
-
-### 4. Ative a Segurança
-
-No arquivo `app/main.py`, encontre esta linha:
-
-```python
-admin = Admin(app, engine)
-```
-
-Altere para:
+Encontre a linha que "tranca" o admin (ela deve estar por volta da linha 70):
 
 ```python
 admin = Admin(app, engine, authentication_backend=authentication_backend)
 ```
 
-Certifique-se de importar o backend corretamente:
+Comente essa linha (coloque um `#` na frente) e, logo abaixo, adicione a versão "destrancada":
 
 ```python
-from app.admin_auth import authentication_backend
+# admin = Admin(app, engine, authentication_backend=authentication_backend)
+admin = Admin(app, engine)
 ```
 
-O servidor irá recarregar automaticamente.
-Agora, o `/admin` exigirá login com **admin** e senha **admin123**.
+Salve o arquivo. O `uvicorn` irá recarregar.
+
+---
+
+### 4. Crie o Usuário no Painel Aberto
+
+Agora, acesse o painel (que estará desprotegido):
+[http://localhost:8000/admin](http://localhost:8000/admin)
+
+Clique na aba **"Usuários"** e depois em **"Criar"**.
+
+Preencha os campos:
+
+* **username:** `admin`
+* **hashed_password:** *(Cole o hash que você copiou no Passo 2)*
+
+Clique em **Salvar**.
+
+---
+
+### 5. "Tranque" o Admin Novamente
+
+Volte ao arquivo `app/main.py`.
+
+Desfaça a mudança: apague a linha `admin = Admin(app, engine)` e tire o `#` da linha de segurança:
+
+```python
+admin = Admin(app, engine, authentication_backend=authentication_backend)
+# admin = Admin(app, engine)
+```
+
+Salve o arquivo. O servidor irá recarregar.
+
+---
+
+Agora o painel está trancado permanentemente e você pode logar em
+[http://localhost:8000/admin](http://localhost:8000/admin)
+com o usuário **admin** e a senha **admin123**.
+
+```
