@@ -1,7 +1,13 @@
 from sqlalchemy import Column, Integer, String, Boolean, Date, Text # importa as ferramentas
 from app.core.database import Base # importa base
 from sqlalchemy.orm import relationship
+from sqlalchemy.orm import Mapped, mapped_column
+from fastapi_storages import FileSystemStorage
+from fastapi_storages.integrations.sqlalchemy import FileType
 
+uploads_storage = FileSystemStorage(
+    path="static/uploads", # onde salvar no disco
+)
 class Animal(Base):
     __tablename__ = "animal"
 
@@ -17,6 +23,8 @@ class Animal(Base):
     status = Column(String(15), nullable=False, default="disponivel") # disponivel, reservado, adotado
     data_entrada = Column(Date)
     observacoes = Column(Text)
+
+    foto_url: Mapped[FileType] = mapped_column(FileType(storage=uploads_storage)) # guarda o caminho da foto
 
     solicitacoes = relationship("Solicitacao", back_populates="animal")
 

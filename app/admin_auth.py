@@ -25,7 +25,7 @@ def decode_access_token(token: str) -> Optional[dict]:
     try:
         decoded_payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return decoded_payload
-    except jwt.PyJWTError:
+    except jwt.JWTError:
         return None
 
 class AdminAuth(AuthenticationBackend):

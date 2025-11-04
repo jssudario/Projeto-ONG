@@ -1,6 +1,5 @@
 /* --- 1. paletas --- */
 :root {
-    /* --- Nova Paleta (Inspirada no Canto da Terra) --- */
     --color-primary-brand:    #0067C2; /* hero, footer, titulos */
     --color-primary-dark:     #004A8F; /* azul mais escuro para hover */
     --color-accent:           #9FC12F; /* botoes */
