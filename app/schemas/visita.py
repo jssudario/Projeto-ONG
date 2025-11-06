@@ -1,16 +1,16 @@
 from datetime import datetime
-from pydantic import BaseModel # type: ignore # Field: restrições: max, min, default, etc
-from typing import Literal
+from pydantic import BaseModel
+from typing import Literal, Optional
 
 Retorno = Literal["aprovado", "reprovado", "pendente"]
 
 class VisitaBase(BaseModel):
-    # campos obrigatórios
+    # Campos obrigatórios
     solicitacao_id: int
     data_hora: datetime
     retorno: Retorno = "pendente"
 
-    # campos opcionais
+    # Campos opcionais
     observacoes: str | None = None
 
 class VisitaCreate(VisitaBase):
@@ -23,19 +23,6 @@ class VisitaUpdate(BaseModel):
 
 class VisitaOut(VisitaBase):
     id: int
+    
     class Config:
         from_attributes = True
-
-
-
-
-
-
-
-
-
-    # id = Column(Integer, primary_key=True, index=True)
-    # solicitacao_id = Column(Integer, ForeignKey("solicitacao.id"), nullable=False)
-    # data_hora = Column(DateTime, nullable=False)
-    # retorno = Column(String(15), nullable=False, default="pendente") # aprovado, reprovado, pendente
-    # observacoes = Column(Text)

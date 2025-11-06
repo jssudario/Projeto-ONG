@@ -1,20 +1,23 @@
-from sqlalchemy import create_engine # ponte entre python e o db (sqlite)
-from sqlalchemy.orm import sessionmaker, declarative_base # sessões temporárias, define classes que vriam tabelas no db
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
-# caminho do db
+# Define o endereço do database
 SQLALCHEMY_DATABASE_URL = "sqlite:///./patinhas.db"
 
-# motor
+# Cria a engine
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
     connect_args={"check_same_thread": False}  
 )
 
-# fábrica de sessões
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine) # commit e mudanças no meu controle
-Base = declarative_base() # clase base de qual todos os modelos irão herdar
+# Cria a fábrica de sessões
+SessionLocal = sessionmaker(
+    autocommit=False, 
+    autoflush=False, 
+    bind=engine
+)
 
-# fast api
+# Injeção de Dependência
 def get_db():
     db = SessionLocal()
     try:

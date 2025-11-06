@@ -7,18 +7,18 @@ Porte = Literal["pequeno", "medio", "grande"]
 Especie = Literal["cachorro", "gato"] 
 
 class AnimalBase(BaseModel):
-    # campos obrigatórios
+    # Campos obrigatórios
     nome: str = Field(min_length=1, max_length=80) 
     especie: Especie
     raca: str = Field(min_length=1, max_length=60)
-    sexo: Sexo
-    idade_meses: int = Field(ge=0) # impede inserir idade negativa
+    sexo: Sexo 
+    idade_meses: int = Field(ge=0) # 'ge=0' > Impede idade negativa
     porte: Porte
 
-    # campos opcionais
+    # Campos opcionais (com valores default)
     castrado: bool = False
     vacinado: bool = False
-    status: str = "disponivel" # default é disponivel
+    status: str = "disponivel"
     data_entrada: date | None = None
     observacoes: str | None = None
 
@@ -37,8 +37,6 @@ class AnimalUpdate(AnimalBase):
     status: str | None = None
     data_entrada: date | None = None
     observacoes: str | None = None
-
-# ajustado AnimalOut para não herdar mais de AnimalBase e sim de BaseModel, assim flexibilizando as regras para saída de dados
 class AnimalOut(BaseModel):
     id: int
     nome: str
@@ -52,6 +50,6 @@ class AnimalOut(BaseModel):
     status: str
     data_entrada: Optional[date] = None
     observacoes: Optional[str] = None
-
+    
     class Config:
         from_attributes = True

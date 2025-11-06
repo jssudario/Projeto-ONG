@@ -1,80 +1,73 @@
 console.log("TESTE PRA VER SE O JS TA CARREGANDO!!!!");
 
-// espera o html inteiro ser carregado antes de rodar
+// Espera o HTML inteiro ser carregado antes de rodar
 document.addEventListener("DOMContentLoaded", function() {
-
-    // pego a div lá do html onde os cards vao entrar
+    // Div onde fica a galeria de animais para adoção
     const galleryContainer = document.getElementById("gallery-container");
-
-    // endereço da api (backend) pra buscar os animais
+    // Endereço da API
     const apiUrl = "http://localhost:8000/animais/";
-
-    // função principal pra buscar os animais no backend
+    // Função que busca os animais no backend
     async function fetchAnimais() {
-        // try -> tentar fazer a conexão
         try {
-            // liga pra api e espera a resposta
+            // Chama a API e aguarda retorno
             const response = await fetch(apiUrl);
-
-            // se a resposta não for ok (erro 404 ou 500), força um erro
+            // Erro
             if (!response.ok) {
                 throw new Error(`Oops! Erro de rede. status: ${response.status}`);
             }
-
-            // se deu tudo ok pega resposta e transforma em json -> lista de animais
+            // Se está tudo ok pega resposta e transforma em JSON -> lista de animais
             const animais = await response.json();
-
-            // chama funcao que vai desenhar os cards, mandando a lista de animais pra ela
+            // Chama função que vai desenhar os cards
             renderAnimais(animais);
-
         // catch -> se o try falhar cai aqui
         } catch (error) {
-            // mostra o erro no console pra saber o que deu errado
+            // Mostra o erro no console pra saber qual o erro
             console.error("falha ao buscar animais:", error);
-            // avisa o usuário na tela que deu erro
+            // Avisa o usuário na tela que deu erro
             galleryContainer.innerHTML = "<p>Não foi possível carregar os dados. Por favor, tente novamente mais tarde.</p>";
         }
     }
-
-    // função que desenha os cards no html
+    // Função que desenha os cards no HTML
     function renderAnimais(animais) {
-        // limpa a galeria antes de adicionar os cards (pra não duplicar)
+        // Limpa a galeria antes de adicionar os cards (pra não duplicar)
         galleryContainer.innerHTML = "";
-
-        // checa se a lista de animais veio vazia
+        // Checa se a lista de animais veio vazia
         if (animais.length === 0) {
-            // se veio vazia, coloca uma mensagem na tela ->
+            // Se veio vazia retorna:
             galleryContainer.innerHTML = "<p>Nenhum animal disponível para adoção no momento.</p>";
-            // -> e para a função aqui
             return;
         }
-
-        // pra cada animal que a api mandou:
+        // Para cada animal que a API mandou
         animais.forEach(animal => {
-            // 1 -> criar um div novo na memória
+            // Cria um div novo na memória
             const card = document.createElement("div");
-            // 2 -> botar a classe animal-card do css nesse div
+            // Coloca a classe animal-card do css nesse div
             card.className = "animal-card"; 
-            // 3 -> montar o html de dentro do card, usando os dados do animal: animal.nome, etc
-                card.innerHTML = `
-                    <div class="animal-card-image">
-                        <img src="images/cachorro-de-rua-pet.jpg" alt="Foto de ${animal.nome}">
-                    </div>
-                    <div class="animal-card-content">
-                        <h3>${animal.nome}</h3>
-                        <p><strong>Espécie:</strong> ${animal.especie}</p>
-                        <p><strong>Idade:</strong> ${animal.idade_meses} meses</p>
-                        <p><strong>Porte:</strong> ${animal.porte}</p>
-                        <a href="#" class="animal-card-button">Quero Adotar</a>
-                    </div>
-                `;
-
-            // 4 -> colocar o card pronto lá pra dentro da gallery-container no html
+// Monta o HTML dntro do card usando os dados do animal                
+let htmlConteudo = `
+    <div class="animal-card-image">
+        <img src="images/cachorro-de-rua-pet.jpg" alt="Foto de ${animal.nome}">
+    </div>
+    <div class="animal-card-content">
+        <h3>${animal.nome}</h3>
+        <p><strong>Espécie:</strong> ${animal.especie}</p>
+        <p><strong>Idade:</strong> ${animal.idade_meses} meses</p>
+`;
+// Só adiciona porte caso seja cachorro (gato não tem porte)
+if (animal.especie.toLowerCase() === 'cachorro') {
+    htmlConteudo += `<p><strong>Porte:</strong> ${animal.porte}</p>`;
+}
+// Botão
+htmlConteudo += `
+        <a href="#" class="animal-card-button">Quero Adotar</a>
+    </div>
+`;
+// Define o HTML final do card
+card.innerHTML = htmlConteudo;
+            // Coloca o card pronto dentro da gallery-container
             galleryContainer.appendChild(card);
         });
     }
-
-    // aqui chama a função principal pra iniciar
+    // Chama a função principal pra iniciar
     fetchAnimais();
-
 });

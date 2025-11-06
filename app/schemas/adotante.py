@@ -1,12 +1,11 @@
 from datetime import date
-from pydantic import BaseModel, Field, EmailStr # type: ignore # Field: restrições: max, min, default, etc
+from pydantic import BaseModel, Field, EmailStr
 
 class AdotanteBase(BaseModel):
-    # todos campos obrigatórios
     nome_completo: str = Field(min_length=1, max_length=255)
     cpf: str = Field(min_length=11, max_length=11)
     data_nascimento: date
-    email: EmailStr # obriga email válido
+    email: EmailStr 
     telefone: str 
     endereco: str
 
@@ -26,7 +25,3 @@ class AdotanteOut(AdotanteBase):
 
     class Config:
         from_attributes = True
-
-
-
-

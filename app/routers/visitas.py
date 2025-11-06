@@ -1,64 +1,68 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
-from typing import List, Optional 
-from app.core.database import get_db
+from typing import List, Optional
 from app.schemas import visita as visita_schema
-from app.models import visita as visita_model
-from app.models import solicitacao as solicitacao_model
+from app.repositories.visita_repository import VisitaRepository
+from app.repositories.solicitacao_repository import SolicitacaoRepository # Para validar a FK
 
 router = APIRouter(prefix="/visitas", tags=["visitas"])
 
-# get, listar
+# Lista todas as visitas, com filtro opcional por retorno
 @router.get("/", response_model=List[visita_schema.VisitaOut])
-def list_visitas(retorno_filter: Optional[str] = None, db: Session = Depends(get_db)): 
-    query = db.query(visita_model.Visita)
-    if retorno_filter: # filtro retorno
-        query = query.filter(visita_model.Visita.retorno == retorno_filter) 
+def list_visitas(
+    retorno_filter: Optional[str] = None, 
+    repo: VisitaRepository = Depends()
+): 
+    return repo.get_all(retorno_filter)
 
-    return query.all()
-
-# get, buscar id
+# Busca uma visita pelo ID
 @router.get("/{visita_id}", response_model=visita_schema.VisitaOut)
-def get_visita(visita_id: int, db: Session = Depends(get_db)):
-    visita = db.query(visita_model.Visita).get(visita_id)
+def get_visita(
+    visita_id: int, 
+    repo: VisitaRepository = Depends()
+):
+    visita = repo.get_by_id(visita_id)
     if not visita:
         raise HTTPException(status_code=404, detail="Oops! Visita não encontrada. 🐾") 
+    return visita
 
-# post, criar
+# Cria uma nova visita, validando se a solicitação-mãe existe
 @router.post("/", response_model=visita_schema.VisitaOut, status_code=status.HTTP_201_CREATED) 
-def create_visita(payload: visita_schema.VisitaCreate, db: Session = Depends(get_db)):
-    # verifica se a solicitação-mãe existe
-    solicitacao = db.query(solicitacao_model.Solicitacao).get(payload.solicitacao_id)
+def create_visita(
+    payload: visita_schema.VisitaCreate, 
+    repo: VisitaRepository = Depends(),
+    solicitacao_repo: SolicitacaoRepository = Depends() # Injeta o repo de solicitação
+):
+    # Verifica se a solicitação-mãe existe
+    solicitacao = solicitacao_repo.get_by_id(payload.solicitacao_id)
     if not solicitacao:
         raise HTTPException(status_code=404, detail="Solicitação não encontrada.")
+    # Se existir, cria visita
+    return repo.create(payload)
 
-    # se existir, cria visita
-    visita = visita_model.Visita(**payload.model_dump()) 
-    db.add(visita) 
-    db.commit()
-    db.refresh(visita)
-    return visita
-
-# put, atualiza
+# Atualiza uma visita existente
 @router.put("/{visita_id}", response_model=visita_schema.VisitaOut)
-def update_visita(visita_id: int, payload: visita_schema.VisitaUpdate, db: Session = Depends(get_db)):
-    visita = db.query(visita_model.Visita).get(visita_id) 
+def update_visita(
+    visita_id: int, 
+    payload: visita_schema.VisitaUpdate, 
+    repo: VisitaRepository = Depends()
+):
+    # O router primeiro verifica se a visita existe
+    visita = repo.get_by_id(visita_id) 
     if not visita:
         raise HTTPException(status_code=404, detail="Oops! Visita não encontrada. 🐾")
-    
-    # atualiza os campos que vieram no payload
-    for k, v in payload.model_dump(exclude_unset=True).items(): 
-        setattr(visita, k, v)  
-    db.commit()
-    db.refresh(visita)
-    return visita
+    # Se existe manda o repositório atualizar
+    return repo.update(visita=visita, payload=payload)
 
-# delete
+# Deleta uma visita
 @router.delete("/{visita_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_visita(visita_id: int, db: Session = Depends(get_db)):
-    visita = db.query(visita_model.Visita).get(visita_id)
+def delete_visita(
+    visita_id: int, 
+    repo: VisitaRepository = Depends()
+):
+    # O router primeiro verifica se a visita existe
+    visita = repo.get_by_id(visita_id)
     if not visita:
         raise HTTPException(status_code=404, detail="Oops! Visita não encontrada. 🐾")
-    db.delete(visita)
-    db.commit()
+    # Se existe manda o repositório deletar
+    repo.delete(visita=visita)
     return

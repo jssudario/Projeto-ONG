@@ -1,14 +1,13 @@
 from datetime import date
-from pydantic import BaseModel, Field # type: ignore # Field: restrições: max, min, default, etc
-from typing import Literal
+from pydantic import BaseModel, Field
+from typing import Literal, Optional
 
 Status = Literal["pendente", "em_avaliacao", "aprovado", "recusado", "cancelado"]
 
 class SolicitacaoBase(BaseModel):
-    # todos campos obrigatórios
     animal_id: int
     adotante_id: int
-    data_solicitacao: date = Field(default_factory=date.today) # data de hoje
+    data_solicitacao: date = Field(default_factory=date.today) 
 
 class SolicitacaoCreate(SolicitacaoBase):
     pass
@@ -24,5 +23,3 @@ class SolicitacaoOut(SolicitacaoBase):
 
     class Config:
         from_attributes = True
-
-

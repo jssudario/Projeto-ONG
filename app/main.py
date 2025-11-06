@@ -1,113 +1,213 @@
-import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-# from starlette.middleware.sessions import SessionMiddleware
 from sqladmin import Admin, ModelView
+from wtforms.fields import SelectField
+from markupsafe import Markup
+from starlette.datastructures import UploadFile
 
-from app.core.database import engine, Base
-from app.routers import animais, adotantes, solicitacoes, visitas
-
+from app.core.database import engine
+from app.core.base import Base
 from app.models.animal import Animal
 from app.models.adotante import Adotante
 from app.models.solicitacao import Solicitacao
 from app.models.visita import Visita
 from app.models.user import User
-
+from app.routers import animais, adotantes, solicitacoes, visitas
 from app.admin_auth import authentication_backend
 
-# garante que a pasta de uploads exista
-os.makedirs("static/uploads", exist_ok=True)
-
-# criar as tabelas no sqlite com base no models
+# Criar as tabelas no sqlite com base no models
 Base.metadata.create_all(bind=engine)
 
-# instância do app, inicia o server
+# Instancia do app, inicia o server
 app = FastAPI(title="Patinhas API")
 
-# ativa o CORS, middlewares e rotas
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"], # qlqr origem 
-    allow_credentials=True,
-    allow_methods=["*"], # todos os metodos
-    allow_headers=["*"],
-)
-
-# servir os arquivos enviados em /uploads
+# Servir arquivos enviados (mesmo prefixo do FileSystemStorage.base_url)
 app.mount("/uploads", StaticFiles(directory="static/uploads"), name="uploads")
 
-# configuracao do painel admin > utilizado sqladmin
-class AnimalAdmin(ModelView, model=Animal):
-    # Cclunas exibidas na lista
-    column_list = [Animal.id, Animal.nome, Animal.especie, Animal.status]
-    # campos exibidos no formulário de criação/edição
-    form_columns = [
-        Animal.nome,
-        Animal.especie,
-        Animal.raca,
-        Animal.sexo,
-        Animal.idade_meses,
-        Animal.porte,
-        Animal.castrado,
-        Animal.vacinado,
-        Animal.status,
-        Animal.data_entrada,
-        Animal.observacoes,
-        Animal.foto_url,
-    ]
 
-    icon = "fa-solid fa-paw"
+# Views do SQLAdmin
+class AnimalAdmin(ModelView, model=Animal):
     name = "Animal"
     name_plural = "Animais"
+    icon = "fa-solid fa-paw"
 
+    column_list = [Animal.id, Animal.nome, Animal.especie, Animal.status, Animal.foto]
+
+    # Thumbnail da foto na listagem
+    # column_formatters = {
+    #     "foto": lambda m, a: Markup(f'<img src="/{m.foto}" style="height:48px;">') if m.foto else ""
+    # }
+
+    form_columns = [
+        Animal.nome, Animal.especie, Animal.raca, Animal.sexo,
+        Animal.idade_meses, Animal.porte, Animal.castrado, Animal.vacinado,
+        Animal.status, Animal.data_entrada, Animal.observacoes,
+        Animal.foto,  # Campo de upload (FileType)
+    ]
+
+    column_labels = {
+        Animal.nome: "Nome", Animal.especie: "Espécie", Animal.raca: "Raça",
+        Animal.sexo: "Sexo", Animal.idade_meses: "Idade (em meses)",
+        Animal.porte: "Porte", Animal.castrado: "Castrado?", Animal.vacinado: "Vacinado?",
+        Animal.status: "Status", Animal.data_entrada: "Data de Entrada",
+        Animal.observacoes: "Observações", Animal.foto: "Foto",
+    }
+
+    form_overrides = {
+        "especie": SelectField,
+        "sexo": SelectField,
+        "porte": SelectField,
+        "castrado": SelectField,
+        "vacinado": SelectField,
+        "status": SelectField,
+    }
+
+    form_args = {
+        "especie": {"choices": [("cachorro", "Cachorro"), ("gato", "Gato")]},
+        "sexo": {"choices": [("macho", "Macho"), ("femea", "Fêmea")]},
+        "porte": {
+            "choices": [
+                ("pequeno", "Pequeno"), ("medio", "Médio"),
+                ("grande", "Grande"), ("nao_se_aplica", "Não se aplica (Gato)")
+            ]
+        },
+        # Booleans como SelectField
+        "castrado": {"choices": [(False, "Não"), (True, "Sim")], "coerce": bool},
+        "vacinado": {"choices": [(False, "Não"), (True, "Sim")], "coerce": bool},
+        "status": {
+            "choices": [
+                ("disponivel", "Disponível"), ("reservado", "Reservado"), ("adotado", "Adotado")
+            ],
+            "default": "disponivel",
+        },
+    }
+
+    async def on_model_change(self, data, model, is_created, request):
+        # Preserva a foto atual se nada novo foi enviado
+        f = data.get("foto")
+        if f is None:
+            return
+        if not isinstance(f, UploadFile):
+            data.pop("foto", None)
 
 class AdotanteAdmin(ModelView, model=Adotante):
     column_list = [Adotante.id, Adotante.nome_completo, Adotante.email, Adotante.telefone]
+    column_labels = {Adotante.nome_completo: "Nome Completo"}
     icon = "fa-solid fa-user"
     name = "Adotante"
     name_plural = "Adotantes"
 
-
-class VisitaAdmin(ModelView, model=Visita):
-    column_list = [Visita.id, Visita.data_hora, Visita.retorno]
-    icon = "fa-solid fa-calendar-check"
-    name = "Visita"
-    name_plural = "Visitas"
-
-
 class SolicitacaoAdmin(ModelView, model=Solicitacao):
-    column_list = [Solicitacao.id, Solicitacao.status, Solicitacao.data_solicitacao]
     icon = "fa-solid fa-file-lines"
     name = "Solicitação"
     name_plural = "Solicitações"
 
+    column_list = [
+        Solicitacao.id,
+        "animal.nome",  # Mostra nome do animal
+        "adotante.nome_completo",  # Mostra nome do adotante
+        Solicitacao.status,
+        Solicitacao.data_solicitacao,
+    ]
+
+    column_labels = {
+        "animal.nome": "Animal",
+        "adotante.nome_completo": "Adotante",
+        Solicitacao.data_solicitacao: "Data",
+        Solicitacao.status: "Status",
+        Solicitacao.motivo_recusa: "Motivo da Recusa",
+    }
+
+    # Usa relacionamento direto no formulário
+    form_columns = [
+        Solicitacao.animal,
+        Solicitacao.adotante,
+        Solicitacao.data_solicitacao,
+        Solicitacao.status,
+        Solicitacao.motivo_recusa,
+    ]
+
+    form_overrides = {"status": SelectField}
+    form_args = {
+        "status": {
+            "choices": [
+                ("pendente", "Pendente"), ("em_avaliacao", "Em Avaliação"),
+                ("aprovado", "Aprovado"), ("reprovado", "Recusado"), ("cancelado", "Cancelado")
+            ],
+            "default": "pendente",
+        }
+    }
+
+    # Pesquisa assíncrona nos relacionamentos por nome
+    form_ajax_refs = {
+        "animal": {"fields": ("nome",)},
+        "adotante": {"fields": ("nome_completo",)},
+    }
+
+class VisitaAdmin(ModelView, model=Visita):
+    icon = "fa-solid fa-calendar-check"
+    name = "Visita"
+    name_plural = "Visitas"
+
+    column_list = [
+        Visita.id,
+        "solicitacao.id",
+        Visita.data_hora,
+        Visita.retorno,
+    ]
+
+    column_labels = {
+        "solicitacao.id": "Solicitação",
+        Visita.data_hora: "Data/Hora",
+        Visita.retorno: "Resultado",
+        Visita.observacoes: "Observações",
+    }
+
+    form_columns = [Visita.solicitacao, Visita.data_hora, Visita.retorno, Visita.observacoes]
+
+    form_overrides = {"retorno": SelectField}
+    form_args = {
+        "retorno": {
+            "choices": [("pendente", "Pendente"), ("aprovado", "Aprovado"), ("reprovado", "Reprovado")],
+            "default": "pendente",
+        }
+    }
+
+    form_ajax_refs = {
+        "solicitacao": {"fields": ("id",)},
+    }
 
 class UserAdmin(ModelView, model=User):
-    column_list = [User.id, User.username]  # nunca exibe a  senha
+    column_list = [User.id, User.username]
     icon = "fa-solid fa-user-shield"
     name = "Usuário"
     name_plural = "Usuários"
 
+# Painel admin
+admin = Admin(app, engine, authentication_backend=authentication_backend)
 
-# PLUG DO ADMIN
-admin = Admin(app, engine, authentication_backend=authentication_backend) # com login
-# admin = Admin(app, engine) # sem login
-
-# registra as views
 admin.add_view(AnimalAdmin)
 admin.add_view(AdotanteAdmin)
-admin.add_view(VisitaAdmin)
 admin.add_view(SolicitacaoAdmin)
+admin.add_view(VisitaAdmin)
 admin.add_view(UserAdmin)
 
-# registra rota
+# Middlewares e rotas
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.include_router(animais.router)
 app.include_router(adotantes.router)
 app.include_router(solicitacoes.router)
 app.include_router(visitas.router)
 
-# healthcheck
+# Teste API
 @app.get("/")
 def root():
     return {"ok": True, "message": "API funcionando"}
