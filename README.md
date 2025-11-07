@@ -1,39 +1,41 @@
-# Projeto Patinhas (ONG)
+# Projeto ONG - Sistema de Gerenciamento de Adoção
 
-Um sistema completo de gerenciamento e adoção de animais para ONGs, desenvolvido com um backend FastAPI (com painel de admin seguro) e um frontend em HTML/CSS/JavaScript.
+Este repositório contém o código-fonte de um sistema web completo para gerenciamento de adoção de animais, desenvolvido para Organizações Não Governamentais (ONGs). A plataforma é composta por um backend robusto em FastAPI e um frontend para interação pública.
 
-## Sobre o Projeto
+## Visão Geral do Projeto
 
-Este projeto cria uma plataforma web funcional para ONGs de proteção animal.
+O sistema é dividido em duas componentes principais:
 
-1.  **Site Público (`/static`):** Uma vitrine para o público ver os animais disponíveis (lendo dinamicamente da API) e enviar formulários de adoção.
-2.  **Painel de Admin (`/admin`):** Uma área de gerenciamento interna, protegida por login, para a ONG cadastrar animais (CRUD), gerenciar usuários e aprovar solicitações.
+1.  **Portal Público (Frontend)**: Uma interface web (`/static`) onde o público geral pode visualizar os animais disponíveis para adoção (consumindo dados da API) e submeter formulários de interesse.
+2.  **Painel Administrativo (Backend)**: Uma área restrita (`/admin`), protegida por autenticação, onde a equipe da ONG pode realizar o gerenciamento completo (CRUD) de animais, administrar usuários e processar solicitações de adoção.
 
 ## Tecnologias Utilizadas
 
 ### Backend
 
-  * Python 3.11+
-  * FastAPI (API)
-  * Uvicorn (Servidor)
-  * SQLAlchemy (ORM)
-  * SQLAdmin (Painel de Admin)
-  * Argon2 / Passlib (Criptografia de senha)
-  * JOSE / JWT (Tokens de autenticação)
+  * **Python 3.11+**
+  * **FastAPI**: Framework principal da API.
+  * **SQLAlchemy**: ORM para interação com o banco de dados.
+  * **SQLAdmin**: Interface para o painel administrativo.
+  * **Uvicorn**: Servidor ASGI.
+  * **Segurança**:
+      * `Argon2` / `Passlib`: Hashing de senhas.
+      * `JOSE` / `JWT`: Tokens de autenticação.
 
 ### Frontend
 
-  * HTML5, CSS3 (Variáveis CSS, Grid)
-  * JavaScript (Fetch API)
+  * **HTML5**
+  * **CSS3** (Variáveis CSS, Grid Layout)
+  * **JavaScript (ES6+)**: Consumo da API via `Fetch`.
 
-## Instalação e Execução
+## Instalação e Execução Local
 
-Siga os passos abaixo para configurar e executar o projeto em sua máquina local.
+Siga os passos abaixo para configurar e executar o projeto em um ambiente de desenvolvimento.
 
 ### 1\. Pré-requisitos
 
-  * [Python 3.11+](https://www.python.org/downloads/)
-  * [Git](https://git-scm.com/downloads)
+  * Python 3.11 ou superior
+  * Git
 
 ### 2\. Clonar o Repositório
 
@@ -42,93 +44,92 @@ git clone git@github.com:jssudario/Projeto-ONG.git
 cd Projeto-ONG
 ```
 
-### 3\. Configurar o Ambiente Backend
+### 3\. Configuração do Ambiente Virtual (Backend)
 
-É altamente recomendado usar um ambiente virtual (venv).
+Recomenda-se o uso de um ambiente virtual (`venv`) para isolar as dependências.
 
 ```bash
 # 1. Crie o ambiente virtual
 python -m venv venv
 
 # 2. Ative o ambiente
-# No Linux/macOS:
+# Linux/macOS
 source venv/bin/activate
-# No Windows (Git Bash):
-source venv/Scripts/activate
+# Windows (Git Bash/PowerShell)
+.\venv\Scripts\activate
 
-# 3. Instale todas as dependências
+# 3. Instale as dependências
 pip install -r requirements.txt
 ```
 
-### 4\. Executar o Projeto
+### 4\. Execução
 
-Você precisará de dois terminais abertos: um para o backend e um para o frontend.
+O projeto requer dois terminais para execução simultânea do backend e do frontend.
 
-#### Terminal 1: Rodar o Backend (API + Admin)
+#### Terminal 1: Backend (API e Admin)
 
 ```bash
+# Inicia o servidor com hot-reload
 uvicorn app.main:app --reload
 ```
 
-O servidor da API será iniciado em [http://localhost:8000](https://www.google.com/search?q=http://localhost:8000).
+A API estará disponível em `http://localhost:8000`.
 
-#### Terminal 2: Ver o Frontend (Site Público)
+#### Terminal 2: Frontend (Portal Público)
 
-1.  Abra o projeto no VS Code.
+Para visualizar o frontend, utilize um servidor local. Se você usa o VS Code, pode usar a extensão "Live Server":
+
+1.  Abra a pasta do projeto no VS Code.
 2.  Clique com o botão direito no arquivo `static/index.html`.
-3.  Selecione **"Open with Live Server"**.
+3.  Selecione "Open with Live Server".
 
 -----
 
-## Como Criar o Primeiro Usuário (Setup Inicial)
+## Configuração Inicial do Superusuário
 
-Para o primeiro acesso, você precisa criar um superusuário. Como o painel já vem "trancado" por padrão no código, seguimos este processo:
+Por padrão, o painel administrativo é iniciado com a autenticação ativada. Siga este procedimento para criar o primeiro usuário administrador:
 
-### 1\. Gere a Senha (Hash)
+### 1\. Gerar Hash de Senha
 
-Com o `venv` ativado, rode este comando no terminal para gerar um hash para sua senha (ex: `admin123`):
+Com o `venv` ativado, execute o comando abaixo para gerar um hash Argon2 para sua senha (ex: `admin123`).
 
 ```bash
 python -c "from app.security import get_password_hash; print(get_password_hash('admin123'))"
 ```
 
-### 2\. Copie o Hash
+Copie o hash gerado (ex: `$argon2id$...`).
 
-Copie o hash gigante que aparecer no terminal (exemplo: `$argon2id$...`).
+### 2\. Desabilitar Autenticação Temporariamente
 
-### 3\. "Destranque" o Admin Temporariamente
-
-1.  Abra o arquivo `app/main.py`.
-2.  Encontre a linha que "tranca" o admin (ela deve estar por volta da linha 70):
+1.  Edite o arquivo `app/main.py`.
+2.  Localize a linha de inicialização do `Admin` (próximo à linha 70):
     ```python
     admin = Admin(app, engine, authentication_backend=authentication_backend)
     ```
-3.  **Comente** essa linha (coloque um `#` na frente) e, logo abaixo, **adicione** a versão "destrancada":
+3.  Comente a linha acima e adicione a inicialização sem autenticação logo abaixo:
     ```python
     # admin = Admin(app, engine, authentication_backend=authentication_backend)
     admin = Admin(app, engine)
     ```
-4.  Salve o arquivo. O `uvicorn` irá recarregar.
+4.  Salve o arquivo. O servidor `uvicorn` reiniciará automaticamente.
 
-### 4\. Crie o Usuário no Painel Aberto
+### 3\. Criar Usuário Administrador
 
-1.  Agora, acesse o painel (que estará *desprotegido*): [http://localhost:8000/admin](https://www.google.com/search?q=http://localhost:8000/admin).
-2.  Clique na aba **"Usuários"** e depois em **"Criar"**.
+1.  Acesse o painel administrativo, agora desprotegido: `http://localhost:8000/admin`.
+2.  Navegue até a seção "Usuários" e clique em "Criar".
 3.  Preencha os campos:
-      * **username:** `admin`
-      * **hashed\_password:** *(Cole o hash que você copiou no Passo 2)*
-4.  Clique em **Salvar**.
+      * **username**: `admin`
+      * **hashed\_password**: (Cole o hash gerado no Passo 1)
+4.  Clique em "Salvar".
 
-### 5\. "Tranque" o Admin Novamente
+### 4\. Reabilitar Autenticação
 
-1.  Volte ao arquivo `app/main.py`.
-2.  Desfaça a mudança: apague a linha `admin = Admin(app, engine)` e tire o `#` da linha de segurança:
+1.  Retorne ao arquivo `app/main.py`.
+2.  Reverta a alteração: descomente a linha original e remova a linha temporária.
     ```python
     admin = Admin(app, engine, authentication_backend=authentication_backend)
     # admin = Admin(app, engine)
     ```
-3.  Salve o arquivo. O servidor irá recarregar.
+3.  Salve o arquivo. O servidor reiniciará.
 
------
-
-Agora o painel está trancado permanentemente e você pode logar em [http://localhost:8000/admin](https://www.google.com/search?q=http://localhost:8000/admin) com o usuário **admin** e a senha **admin123**.
+A partir deste ponto, o painel administrativo em `http://localhost:8000/admin` está protegido e acessível com as credenciais criadas (ex: `admin` / `admin123`).
