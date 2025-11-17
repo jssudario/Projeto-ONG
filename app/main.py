@@ -54,7 +54,7 @@ ESPECIE_LABELS = {
 
 ESPECIE_CHOICES = [
     ("cachorro", "Cachorro"),
-    ("gato", "Gato"),
+    ("gato", "Gato"), 
 ]
 
 SEXO_LABELS = {
@@ -139,15 +139,6 @@ class AnimalAdmin(ModelView, model=Animal):
             "default": "disponivel",
         },
     }
-
-    async def on_model_change(self, data, model, is_created, request):
-        # Preserva a foto atual se nada novo foi enviado
-        f = data.get("foto")
-        if f is None:
-            return
-        if not isinstance(f, UploadFile):
-            data.pop("foto", None)
-
 
 class AdotanteAdmin(ModelView, model=Adotante):
     column_list = [Adotante.id, Adotante.nome_completo, Adotante.email, Adotante.telefone]

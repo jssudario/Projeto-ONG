@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List
 from app.schemas import adotante as adotante_schema
 from app.repositories.adotante_repository import AdotanteRepository
+from datetime import date, timedelta
 
 router = APIRouter(prefix="/adotantes", tags=["adotantes"])
 
@@ -24,6 +25,19 @@ def create_adotante(
     payload: adotante_schema.AdotanteCreate, 
     repo: AdotanteRepository = Depends()
 ): 
+    # Pega a data de nascimento do payload (que veio do formulário)
+    data_nascimento = payload.data_nascimento
+    
+    # Calcula a data exata de 18 anos atrás
+    # (hoje - 18 anos)
+    data_maioridade = date.today() - timedelta(days=18*365.25) 
+    
+    # Se a data de nascimento for DEPOIS da data de maioridade, a pessoa é menor.
+    if data_nascimento > data_maioridade:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Adoção não permitida. O adotante deve ser maior de 18 anos."
+        )
     return repo.create(payload)
 
 # Atualiza um adotante existente

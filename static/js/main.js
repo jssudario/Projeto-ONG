@@ -7,6 +7,14 @@ document.addEventListener("DOMContentLoaded", function() {
     // Origem do backend (ex.: http://localhost:8000), usada para montar URLs absolutas das imagens
     const apiOrigin = new URL(apiUrl).origin;
 
+    // --- Elementos do formulário ---
+    const form = document.getElementById("form-adocao");
+    const submitButton = document.getElementById("submit-button");
+    const errorAlert = document.getElementById("mensagem-erro");
+    const errorDetail = document.getElementById("erro-detalhe");
+
+    // --- Definição das funções ---
+
     // Função que busca os animais no backend
     async function fetchAnimais() {
         try {
@@ -25,7 +33,9 @@ document.addEventListener("DOMContentLoaded", function() {
             // Mostra o erro no console pra saber qual o erro
             console.error("falha ao buscar animais:", error);
             // Avisa o usuário na tela que deu erro
-            galleryContainer.innerHTML = "<p>Não foi possível carregar os dados. Por favor, tente novamente mais tarde.</p>";
+            if (galleryContainer) {
+                galleryContainer.innerHTML = "<p>Não foi possível carregar os dados. Por favor, tente novamente mais tarde.</p>";
+            }
         }
     }
 
@@ -51,6 +61,24 @@ document.addEventListener("DOMContentLoaded", function() {
         // Se vier só o nome do arquivo, força para /static/uploads/nome.jpg
         return `${apiOrigin}/static/uploads/${f.replace(/^\/+/, "")}`;
     };
+
+    // Função para checar se é maior de idade
+    function isMaiorDeIdade(dataNascimento) {
+        // Converte a string YYYY-MM-DD em data
+        const dataNasc = new Date(dataNascimento);
+        const hoje = new Date(); // Data de hoje
+
+        // Calcular 18 anos atrás
+        const dataMaioridade = new Date(
+            hoje.getFullYear() - 18,
+            hoje.getMonth(),
+            hoje.getDate()
+        );
+        
+        // Se a data nascimento for menor ou igual á data de 18 anos atrás, é maior de idade
+        return dataNasc <= dataMaioridade;
+
+    }
 
     // Função que desenha os cards no HTML
     function renderAnimais(animais) {
@@ -83,9 +111,9 @@ document.addEventListener("DOMContentLoaded", function() {
             if (animal.especie && animal.especie.toLowerCase() === "cachorro") {
                 htmlConteudo += `<p><strong>Porte:</strong> ${animal.porte}</p>`;
             }
-            // Botão
+            // Botão (CORRIGIDO para enviar o ID para a URL do formulário)
             htmlConteudo += `
-                    <a href="#" class="animal-card-button">Quero Adotar</a>
+                    <a href="formulario.html?animal_id=${animal.id}" class="animal-card-button">Quero Adotar</a>
                 </div>
             `;
             // Define o HTML final do card
@@ -95,6 +123,53 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // Chama a função principal pra iniciar
-    fetchAnimais();
+    // --- Lógica de execução ---
+
+    // 1. Se for a página da galeria (ex: index.html)
+    if (galleryContainer) {
+        // Chama a função principal pra iniciar
+        fetchAnimais();
+    }
+
+    // 2. Se for a página do formulário (ex: formulario.html)
+    if (form) {
+        
+        // Pega o ID do animal da URL e preenche o campo oculto
+        const urlParams = new URLSearchParams(window.location.search);
+        const animalIdDaURL = urlParams.get('animal_id');
+        const hiddenAnimalIdField = document.getElementById('animal_id');
+        
+        if (animalIdDaURL && hiddenAnimalIdField) {
+            hiddenAnimalIdField.value = animalIdDaURL;
+        } else {
+            console.error("ID do animal não encontrado na URL. O formulário pode não funcionar.");
+        }
+
+        // Adiciona o listener para o SUBMIT do formulário
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            
+            if(submitButton) submitButton.disabled = true;
+            if(submitButton) submitButton.innerText = "Enviando...";
+            if(errorAlert) errorAlert.style.display = "none";
+
+
+            // Pega os dados do formulário
+            const formData = new FormData(form);
+            const dataNascimento = formData.get("data_nascimento");
+
+            // --- Validação no front ---
+            if (!isMaiorDeIdade(dataNascimento)) {
+                errorDetail.innerText = "(O adotante deve ser maior de 18 anos.)";
+                errorAlert.style.display = "block";
+                
+                // Reabilita o botão e PARA a execução
+                submitButton.disabled = false;
+                submitButton.innerText = "Enviar Interesse";
+                return; 
+            }
+            
+            
+        });
+    }
 });
