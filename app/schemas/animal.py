@@ -50,6 +50,7 @@ class AnimalOut(BaseModel):
     status: str
     data_entrada: Optional[date] = None
     observacoes: Optional[str] = None
+    foto: Optional[str] = None
     
     class Config:
         from_attributes = True
