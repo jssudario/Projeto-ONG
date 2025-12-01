@@ -146,7 +146,7 @@ header {
 
 
 /* ==========================================================================
-   3. SEÇÃO HEROI (DESTAQUE PRINCIPAL)
+   3. SEÇÃO HEROI 
    ========================================================================== */
 .heroi {
     min-height: 100vh;
@@ -329,7 +329,7 @@ header {
     transform: translateY(-3px);
 }
 
-/* Botão Branco (Usado na caixa de destaque) */
+/* Botão Branco */
 .botao-branco {
     display: inline-block;
     background-color: var(--cor-fundo-branco);
@@ -573,7 +573,7 @@ header {
 
 
 /* ==========================================================================
-   8. SEÇÃO "ONDE ESTAMOS" (MAPA + INFO)
+   8. SEÇÃO "ONDE ESTAMOS"
    ========================================================================== */
 .onde-estamos {
     width: 100%;
@@ -857,7 +857,7 @@ header {
 
 
 /* ==========================================================================
-   11. RODAPÉ FINAL (Layout Petz + Cores Patinhas)
+   11. RODAPÉ FINAL
    ========================================================================== */
 
 /* 1. CAIXA FLUTUANTE DE DÚVIDAS */
@@ -895,7 +895,7 @@ header {
     color: var(--cor-fundo-branco);
 }
 
-/* 2. RODAPÉ AZUL CURVADO */
+/* 2. RODAPÉ CURVADO */
 .rodape {
     background: linear-gradient(135deg, var(--cor-primaria-clara) 0%, var(--cor-primaria-escura) 100%);
     color: var(--cor-fundo-branco);
