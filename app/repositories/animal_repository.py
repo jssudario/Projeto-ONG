@@ -12,10 +12,18 @@ class AnimalRepository:
         self.db = db
     
     # Busca todos os animais, com filtro opcional por status
-    def get_all(self, status_filter: Optional[str] = None) -> List[animal_model.Animal]:
+    # Busca todos os animais com filtros opcionais
+    def get_all(self, status_filter: Optional[str] = None, especie_filter: Optional[str] = None) -> List[animal_model.Animal]:
         query = self.db.query(animal_model.Animal)
+        
+        # Filtro de Status (já existia)
         if status_filter:
             query = query.filter(animal_model.Animal.status == status_filter)
+            
+        # Filtro de Espécie (NOVO)
+        if especie_filter:
+            query = query.filter(animal_model.Animal.especie == especie_filter)
+            
         return query.all()
 
     # Busca um único animal pelo ID

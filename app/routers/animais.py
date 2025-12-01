@@ -5,13 +5,18 @@ from app.repositories.animal_repository import AnimalRepository
 
 router = APIRouter(prefix="/animais", tags=["animais"])
 
-# Lista todos os animais, com um filtro opcional por status
+# Lista todos os animais, com um filtro opcional por status (Regra de Negócio: Somente animais disponíveis)
 @router.get("/", response_model=List[animal_schema.AnimalOut])
 def list_animais(
-    status_filter: Optional[str] = None, 
+    status_filter: Optional[str] = "disponivel",
+    especie_filter: Optional[str] = None,
     repo: AnimalRepository = Depends()
 ):
-    return repo.get_all(status_filter)
+    # Se o filtro for 'disponivel' (o default), o repositório só retorna esses.
+    # Se o admin quiser ver todos, ele pode passar status_filter=None explicitamente
+    # na URL do navegador ou via código.
+    # Passamos os dois filtros para o repositório
+    return repo.get_all(status_filter=status_filter, especie_filter=especie_filter)
 
 # Busca um animal específico pelo ID
 @router.get("/{animal_id}", response_model=animal_schema.AnimalOut)
