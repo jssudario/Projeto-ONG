@@ -3,95 +3,197 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Projeto Patinhas</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Momo+Trust+Display&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css"> 
+    <link href="https://fonts.googleapis.com/css2?family=Momo+Trust+Display&family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Momo+Trust+Sans:wght@200..800&family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
     <header>
-        <div class="top-bar"></div>
-        <div class="main-nav">
-            <h1><a href="index.html">Projeto Patinhas</a></h1>
+        <div class="barra-topo"></div>
+        <div class="nav-principal">
+            <h1>
+                <a href="index.html" class="logo-link">
+                    <img src="uploads/logoverde.png" class="logo-topo">
+                    Projeto Patinhas
+                </a>
+            </h1>
             <nav>
                 <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="sobre.html">Sobre Nós</a></li>
-                    <li><a href="adocao.html">Quero Adotar</a></li>
-                    <li><a href="contato.html">Contato</a></li>
+                    <li><a href="index.html"><strong>Home</strong></a></li>
+                    <li><a href="#missao"><strong>Nossa Missão</strong></a></li>
+                    <li><a href="#galeria"><strong>Quero Adotar</strong></a></li>
+                    <li><a href="index.html"><strong>Contato</strong></a></li>
                 </ul>
             </nav>
         </div>
     </header>
 
-    <section class="hero">
-        <div class="hero-content">
-            <h2>Transforme uma vida: Adote!</h2>
-            <p>Encontre cães e gatos resgatados que estão esperando por um lar amoroso como o seu.</p>
-            <a href="adocao.html" class="cta-button">Quero Adotar</a>
+    <section class="heroi">
+        <div class="conteudo-heroi conteiner">
+            <div class="heroi-esquerda">
+                <h2>
+                    Transforme uma vida:<br>
+                    <span class="destaque">Adote um amigo!</span>
+                </h2>
+                <p>
+                    Cães e gatos resgatados, tratados com carinho e prontos para
+                    encontrar um lar cheio de amor. Veja os animais disponíveis e
+                    dê o próximo passo para adotar.
+                </p>
+                <div class="botoes-heroi">
+                    <a href="#galeria" class="botao-chamada">Ver animais para adoção</a>
+                    <a href="#missao" class="botao-secundario">Conheça nossa missão</a>
+                </div>
+            </div>
+            <div class="heroi-direita">
+                <div class="figura-heroi">
+                    <img src="uploads/animal-hero.png" alt="Cachorro" class="imagem-heroi">
+                </div>
+            </div>
         </div>
     </section>
 
     <main>
-        <section class="about-us container"> <h2>Quem Somos</h2>
-            <p>
-                O "Projeto Patinhas" é uma ONG dedicada ao resgate, reabilitação e adoção 
-                de cães e gatos em situação de risco. Nossa missão é lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut a lorem velit. Vivamus posuere efficitir mi vitae vulputate. Duis sit amet orci ac metus tincidunt blandit in sit amet dolor. In ultricies dictum tempus. Integer venenatis magna mattis commodo consectetur. Maecenas eget lectus porttitor, interdum felis non, condimentum nisi. Duis pellentesque eros in luctus faucibus. Donec tincidunt auctor diam. Nullam convallis justo lobortis, ultricies purus id, posuere enim.
-            </p>
+
+        <section id="missao" class="secao-missao conteiner">
+
+            <div class="missao-esquerda">
+                <div class="figura-missao">
+                    <img src="uploads/animal-missao.png" alt="Gatinho Missão" class="imagem-missao">
+                </div>
+            </div>
+
+            <div class="missao-direita">
+                <h2>Nossa missão</h2>
+                <p>
+                    O Projeto Patinhas é uma ONG dedicada ao resgate, reabilitação e
+                    realocação de animais em situação de rua ou risco. Nossa missão
+                    é conectar corações, encontrando lares amorosos para cães e gatos
+                    que merecem uma segunda chance.
+                </p>
+                <p>
+                    Acreditamos que cada adoção é uma vida transformada, não apenas
+                    para o animal, mas também para a família que o acolhe. Trabalhamos
+                    incansavelmente para garantir saúde, segurança e finais felizes.
+                </p>
+            </div>
         </section>
 
-        
-        <section class="animal-gallery container"> <h2 class="gallery-title">Amigos Esperando por Você</h2>
-            
-            <div id="gallery-container" class="gallery-container">
+        <section id="galeria" class="galeria-animais">
+            <div class="conteiner">
+                <h2 class="titulo-galeria">Quero adotar!</h2>
+
+                <div class="filtros-galeria" style="margin-bottom: 40px;">
+                    <button class="botao-filtro ativo" onclick="filtrarAnimais('')">Todos</button>
+                    <button class="botao-filtro" onclick="filtrarAnimais('cachorro')">Cães</button>
+                    <button class="botao-filtro" onclick="filtrarAnimais('gato')">Gatos</button>
                 </div>
 
+                <div id="conteiner-galeria" class="conteiner-galeria">
+                </div>
+            </div>
         </section>
-        
+
+        </div>
+    </section>
+
+    <section class="onde-estamos conteiner">
+        <div class="onde-estamos-grid">
+
+            <div class="onde-info">
+
+                <div class="bloco-texto">
+                    <strong>Endereço</strong>
+                    <p>Av. Wenceslau Braz, 1018 - Lagoinha<br>São Sebastião do Paraíso - MG, 37957-054</p>
+                </div>
+
+                <div class="bloco-texto">
+                    <strong>Horário de Funcionamento</strong>
+                    <p>Segunda a Sexta: 08:00 - 18:00<br>Sábado: 09:00 - 13:00</p>
+                </div>
+            </div>
+
+            <div class="mapa">
+                <iframe
+                    src="https://maps.google.com/maps?q=Av.+Wenceslau+Braz,+1018+-+Lagoinha,+São+Sebastião+do+Paraíso+-+MG&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                    width="100%"
+                    height="100%"
+                    style="border:0;"
+                    allowfullscreen=""
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+        </div>
+    </section>
+
+    <section class="secao-duvidas">
+    ```
+
+    -
+
     </main>
 
-    <footer>
-        <div class="footer-content">
-            <div class="footer-grid">
-                
-                <div class="footer-column">
+    </section>
+
+    <section class="secao-duvidas">
+        <div class="box-destaque">
+            <h2>Dúvidas sobre adoção?</h2>
+            <p>
+                <strong>
+                    Visite nossa página de perguntas frequentes ou entre em contato pelo projetopatinhas@email.com.
+                    Estamos ansiosos para ajudar você a encontrar um novo amigo.
+                </strong>
+            </p>
+            <a href="#" class="botao-branco">
+                Visite nosso FAQ
+            </a>
+        </div>
+    </section>
+
+    <footer class="rodape">
+        <div class="conteudo-rodape">
+            <div class="grade-rodape">
+
+                <div class="coluna-rodape">
                     <h4>Navegação</h4>
                     <ul>
                         <li><a href="index.html">Home</a></li>
-                        <li><a href="sobre.html">Sobre Nós</a></li>
-                        <li><a href="adocao.html">Quero Adotar</a></li>
-                        <li><a href="contato.html">Contato</a></li>
+                        <li><a href="#missao">Nossa Missão</a></li>
+                        <li><a href="#galeria">Quero Adotar</a></li>
+                        <li><a href="index.html">Contato</a></li>
                     </ul>
                 </div>
 
-                <div class="footer-column">
+                <div class="coluna-rodape">
                     <h4>Contato</h4>
                     <p>projetopatinhas@email.com</p>
                     <p>(35) 99939-8923</p>
                     <p>São Sebastião do Paraíso - MG</p>
                 </div>
 
-                <div class="footer-column">
+                <div class="coluna-rodape">
                     <h4>Redes Sociais</h4>
-                    <p><a href="#">Instagram</a></p>
-                    <p><a href="#">Facebook</a></p>
-                    <p><a href="#">TikTok</a></p>
+                    <ul>
+                        <li><a href="#">Instagram</a></li>
+                        <li><a href="#">Facebook</a></li>
+                        <li><a href="#">TikTok</a></li>
+                    </ul>
                 </div>
-
             </div>
 
-            <div class="footer-bottom">
+            <p class="frase-destaque">Não compre. Adote!</p>
+
+            <div class="rodape-inferior">
                 <p>© 2025 Projeto Patinhas. Todos os direitos reservados.</p>
             </div>
         </div>
-        
-        <div class="top-bar"></div>
-        
     </footer>
 
     <script src="js/main.js"></script>

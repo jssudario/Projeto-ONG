@@ -1,175 +1,179 @@
-// Espera o HTML inteiro ser carregado antes de rodar
-document.addEventListener("DOMContentLoaded", function() {
-    // Div onde fica a galeria de animais para adoção
-    const galleryContainer = document.getElementById("gallery-container");
-    // Endereço da API
-    const apiUrl = "http://localhost:8000/animais/";
-    // Origem do backend (ex.: http://localhost:8000), usada para montar URLs absolutas das imagens
-    const apiOrigin = new URL(apiUrl).origin;
+document.addEventListener("DOMContentLoaded", function () {
 
-    // --- Elementos do formulário ---
-    const form = document.getElementById("form-adocao");
-    const submitButton = document.getElementById("submit-button");
-    const errorAlert = document.getElementById("mensagem-erro");
-    const errorDetail = document.getElementById("erro-detalhe");
+    // --- SELETORES GERAIS ---
+    // Container onde os cartões dos animais serão renderizados
+    const containerGaleria = document.getElementById("conteiner-galeria")
+    // Botões para filtrar a lista por espécie (Todos, Cães, Gatos)
+    const botoesFiltro = document.querySelectorAll(".botao-filtro")
 
-    // --- Definição das funções ---
+    // Configuração da URL base da API
+    // Ajuste aqui caso o endereço do servidor backend mude
+    const urlApi = "http://localhost:8000/animais/"
+    const origemApi = new URL(urlApi).origin
 
-    // Função que busca os animais no backend
-    async function fetchAnimais() {
-        try {
-            // Chama a API e aguarda retorno
-            const response = await fetch(apiUrl);
-            // Erro
-            if (!response.ok) {
-                throw new Error(`Oops! Erro de rede. status: ${response.status}`);
-            }
-            // Se está tudo ok pega resposta e transforma em JSON -> lista de animais
-            const animais = await response.json();
-            // Chama função que vai desenhar os cards
-            renderAnimais(animais);
-        // catch -> se o try falhar cai aqui
-        } catch (error) {
-            // Mostra o erro no console pra saber qual o erro
-            console.error("falha ao buscar animais:", error);
-            // Avisa o usuário na tela que deu erro
-            if (galleryContainer) {
-                galleryContainer.innerHTML = "<p>Não foi possível carregar os dados. Por favor, tente novamente mais tarde.</p>";
-            }
-        }
-    }
+    // --- FUNÇÕES AUXILIARES ---
 
-    // Função auxiliar para o caminho da foto vindo do backend
-    const resolveFoto = (valor) => {
+    /**
+     * Resolve o caminho completo da imagem do animal
+     * Se não houver foto, retorna uma imagem placeholder padrão
+     * Trata caminhos relativos e absolutos
+     */
+    const resolverFoto = (valor) => {
         if (!valor || typeof valor !== "string") {
-            return `${apiOrigin}/img/placeholder.jpg`;
+            return `${origemApi}/img/placeholder.jpg`
         }
-
-        let f = valor.trim();
-
+        let caminhoFoto = valor.trim()
         
-        if (f.startsWith("http://") || f.startsWith("https://")) {
-            return f;
+        // Se já for uma URL completa (http/https), retorna ela mesma
+        if (caminhoFoto.startsWith("http://") || caminhoFoto.startsWith("https://")) {
+            return caminhoFoto
         }
-
-        // Se já vier com /static/uploads ou static/uploads no início
-        if (f.startsWith("/static/uploads") || f.startsWith("static/uploads")) {
-            // Garante que não fique com duas barras
-            return `${apiOrigin}/${f.replace(/^\/+/, "")}`;
-        }
-
-        // Se vier só o nome do arquivo, força para /static/uploads/nome.jpg
-        return `${apiOrigin}/static/uploads/${f.replace(/^\/+/, "")}`;
-    };
-
-    // Função para checar se é maior de idade
-    function isMaiorDeIdade(dataNascimento) {
-        // Converte a string YYYY-MM-DD em data
-        const dataNasc = new Date(dataNascimento);
-        const hoje = new Date(); // Data de hoje
-
-        // Calcular 18 anos atrás
-        const dataMaioridade = new Date(
-            hoje.getFullYear() - 18,
-            hoje.getMonth(),
-            hoje.getDate()
-        );
         
-        // Se a data nascimento for menor ou igual á data de 18 anos atrás, é maior de idade
-        return dataNasc <= dataMaioridade;
-
+        // Normaliza o caminho relativo removendo barras iniciais duplicadas
+        if (caminhoFoto.startsWith("/static/uploads") || caminhoFoto.startsWith("static/uploads")) {
+            return `${origemApi}/${caminhoFoto.replace(/^\/+/, "")}`
+        }
+        
+        // Padrão: adiciona o prefixo da pasta de uploads
+        return `${origemApi}/static/uploads/${caminhoFoto.replace(/^\/+/, "")}`
     }
 
-    // Função que desenha os cards no HTML
-    function renderAnimais(animais) {
-        // Limpa a galeria antes de adicionar os cards (pra não duplicar)
-        galleryContainer.innerHTML = "";
-        // Checa se a lista de animais veio vazia
+    /**
+     * Formata a idade em meses para uma string legível (Anos e Meses)
+     * Exemplo: 14 meses -> "1 ano e 2 meses"
+     */
+    function formatarIdade(mesesTotal) {
+        // Se for menos de 1 ano, exibe apenas os meses
+        if (mesesTotal < 12) {
+            return `${mesesTotal} meses`
+        }
+
+        const anos = Math.floor(mesesTotal / 12)
+        const meses = mesesTotal % 12
+
+        const textoAnos = anos === 1 ? "1 ano" : `${anos} anos`
+
+        // Se a divisão for exata (ex: 24 meses), exibe apenas os anos
+        if (meses === 0) {
+            return textoAnos
+        }
+
+        const textoMeses = meses === 1 ? "1 mês" : `${meses} meses`
+
+        return `${textoAnos} e ${textoMeses}`
+    }
+
+    // --- FUNÇÕES DA GALERIA (COM ANIMAÇÃO DE FILTRO) ---
+
+    /**
+     * Busca os dados dos animais na API e atualiza a galeria
+     * Aceita um parâmetro opcional 'especie' para filtragem
+     */
+    async function buscarAnimais(especie = "") {
+        // Inicia a animação de saída (Fade-Out)
+        if (containerGaleria) {
+            containerGaleria.classList.add("escondido")
+        }
+
+        // Aguarda 300ms para a animação CSS completar antes de trocar os dados
+        setTimeout(async () => {
+            try {
+                // Constrói a URL com o filtro de query string, se houver
+                let urlCompleta = urlApi
+                if (especie) {
+                    urlCompleta += `?especie_filter=${especie}`
+                }
+
+                const resposta = await fetch(urlCompleta)
+                if (!resposta.ok) {
+                    throw new Error(`Status: ${resposta.status}`)
+                }
+                const animais = await resposta.json()
+
+                // Renderiza os novos cartões
+                renderizarAnimais(animais)
+
+            } catch (erro) {
+                console.error("Erro ao buscar:", erro)
+                if (containerGaleria) {
+                    containerGaleria.innerHTML = "<p>Erro ao carregar animais.</p>"
+                }
+            } finally {
+                // Inicia a animação de entrada (Fade-In)
+                if (containerGaleria) {
+                    containerGaleria.classList.remove("escondido")
+                }
+            }
+        }, 300)
+    }
+
+    /**
+     * Gera o HTML dos cartões de animais e insere no DOM
+     */
+    function renderizarAnimais(animais) {
+        if (!containerGaleria) return
+
+        containerGaleria.innerHTML = ""
+
+        // Exibe mensagem caso o filtro não retorne resultados
         if (animais.length === 0) {
-            // Se veio vazia retorna:
-            galleryContainer.innerHTML = "<p>Nenhum animal disponível para adoção no momento.</p>";
-            return;
+            containerGaleria.innerHTML = "<p style='grid-column: 1/-1;'>Nenhum animal encontrado nesta categoria.</p>"
+            return
         }
-        // Para cada animal que a API mandou
+
+        // Dicionário para formatar o sexo (banco -> visual)
+        const mapSexo = { "femea": "Fêmea", "macho": "Macho" }
+
         animais.forEach(animal => {
-            // Cria um div novo na memória
-            const card = document.createElement("div");
-            // Coloca a classe animal-card do css nesse div
-            card.className = "animal-card"; 
+            const cartao = document.createElement("div")
+            cartao.className = "cartao-animal"
 
-            // Monta o HTML dentro do card usando os dados do animal
-            let htmlConteudo = `
-                <div class="animal-card-image">
-                    <img src="${resolveFoto(animal.foto)}" alt="Foto de ${animal.nome}" onerror="this.onerror=null;this.src='${apiOrigin}/img/placeholder.jpg';">
+            const sexoFormatado = mapSexo[animal.sexo] || animal.sexo
+            const idadeTexto = formatarIdade(animal.idade_meses)
+
+            // Construção do HTML do cartão
+            let conteudoHtml = `
+                <div class="imagem-cartao-animal">
+                    <img src="${resolverFoto(animal.foto)}" alt="Foto de ${animal.nome}" onerror="this.onerror=null;this.src='${origemApi}/img/placeholder.jpg';">
                 </div>
-                <div class="animal-card-content">
+                <div class="conteudo-cartao-animal">
                     <h3>${animal.nome}</h3>
-                    <p><strong>Espécie:</strong> ${animal.especie}</p>
-                    <p><strong>Idade:</strong> ${animal.idade_meses} meses</p>
-            `;
-            // Só adiciona porte caso seja cachorro (gato não tem porte)
-            if (animal.especie && animal.especie.toLowerCase() === "cachorro") {
-                htmlConteudo += `<p><strong>Porte:</strong> ${animal.porte}</p>`;
-            }
-            // Botão (CORRIGIDO para enviar o ID para a URL do formulário)
-            htmlConteudo += `
-                    <a href="formulario.html?animal_id=${animal.id}" class="animal-card-button">Quero Adotar</a>
+                    <p><strong>Espécie:</strong> <span style="text-transform: capitalize;">${animal.especie}</span></p>
+                    <p><strong>Sexo:</strong> ${sexoFormatado}</p>
+                    <p><strong>Idade:</strong> ${idadeTexto}</p>
+                    <a href="formulario.html?animal_id=${animal.id}" class="botao-cartao-animal">Quero Adotar</a>
                 </div>
-            `;
-            // Define o HTML final do card
-            card.innerHTML = htmlConteudo;
-            // Coloca o card pronto dentro da gallery-container
-            galleryContainer.appendChild(card);
-        });
+            `
+            cartao.innerHTML = conteudoHtml
+            containerGaleria.appendChild(cartao)
+        })
     }
 
-    // --- Lógica de execução ---
+    // --- INICIALIZAÇÃO ---
 
-    // 1. Se for a página da galeria (ex: index.html)
-    if (galleryContainer) {
-        // Chama a função principal pra iniciar
-        fetchAnimais();
-    }
+    // Verifica se estamos na página que contém a galeria
+    if (containerGaleria) {
+        // Carregamento inicial sem filtros
+        buscarAnimais("")
 
-    // 2. Se for a página do formulário (ex: formulario.html)
-    if (form) {
-        
-        // Pega o ID do animal da URL e preenche o campo oculto
-        const urlParams = new URLSearchParams(window.location.search);
-        const animalIdDaURL = urlParams.get('animal_id');
-        const hiddenAnimalIdField = document.getElementById('animal_id');
-        
-        if (animalIdDaURL && hiddenAnimalIdField) {
-            hiddenAnimalIdField.value = animalIdDaURL;
-        } else {
-            console.error("ID do animal não encontrado na URL. O formulário pode não funcionar.");
+        // Adiciona eventos de clique aos botões de filtro
+        if (botoesFiltro) {
+            botoesFiltro.forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    // Gerencia a classe 'ativo' para estilo visual
+                    botoesFiltro.forEach(b => b.classList.remove("ativo"))
+                    e.target.classList.add("ativo")
+
+                    // Determina o filtro com base no texto do botão
+                    let filtro = ""
+                    const texto = e.target.textContent.toLowerCase()
+                    if (texto.includes("cães") || texto.includes("cachorro")) filtro = "cachorro"
+                    if (texto.includes("gatos") || texto.includes("gato")) filtro = "gato"
+
+                    // Dispara a busca com o novo filtro
+                    buscarAnimais(filtro)
+                })
+            })
         }
-
-        // Adiciona o listener para o SUBMIT do formulário
-        form.addEventListener("submit", async (event) => {
-            event.preventDefault();
-            
-            if(submitButton) submitButton.disabled = true;
-            if(submitButton) submitButton.innerText = "Enviando...";
-            if(errorAlert) errorAlert.style.display = "none";
-
-
-            // Pega os dados do formulário
-            const formData = new FormData(form);
-            const dataNascimento = formData.get("data_nascimento");
-
-            // --- Validação no front ---
-            if (!isMaiorDeIdade(dataNascimento)) {
-                errorDetail.innerText = "(O adotante deve ser maior de 18 anos.)";
-                errorAlert.style.display = "block";
-                
-                // Reabilita o botão e PARA a execução
-                submitButton.disabled = false;
-                submitButton.innerText = "Enviar Interesse";
-                return; 
-            }
-            
-            
-        });
     }
-});
+})

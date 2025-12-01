@@ -1,305 +1,1059 @@
-/* --- 1. paletas --- */
+/* ==========================================================================
+   1. CONFIGURAÇÕES GLOBAIS E VARIÁVEIS
+   ========================================================================== */
 :root {
-    --color-primary-brand:    #0067C2; /* hero, footer, titulos */
-    --color-primary-dark:     #004A8F; /* azul mais escuro para hover */
-    --color-accent:           #9FC12F; /* botoes */
-    --color-accent-light:     #B8D65A; /* verde mais claro para hover */
-    --color-secondary:        #E8AB00; /* barras: inicial e final */
+    /* PALETA DE CORES DA MARCA */
+    --cor-primaria-marca: #63b4d4;
+    --cor-primaria-escura: #247091;
+    --cor-primaria-clara: #5b9bc2;
 
-    /* --- neutros --- */
-    --color-text: #333;
-    --color-bg-light: #f7f3ed; /* fundo creme */
-    --color-bg-white: #fff;
-    --color-border: #ddd;
+    /* CORES DE DESTAQUE E AÇÃO */
+    --cor-destaque-escura: #6f8a18;
+    --cor-destaque: #9FC12F;
+    --cor-destaque-clara: #B8D65A;
+    --cor-secundaria: #E8AB00;
+
+    /* EFEITOS VISUAIS */
+    --cor-primaria-marca-rgb: 78, 151, 180;
+    --sombra-cartao: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
+    --sombra-hover: 0 20px 40px -10px rgba(36, 112, 145, 0.15);
+
+    /* CORES NEUTRAS */
+    --cor-texto: #333;
+    --cor-fundo-claro: #f7f3ed;
+    --cor-fundo-branco: #fff;
+    --cor-borda: #ddd;
+
+    /* CORES SEMÂNTICAS (FEEDBACK) */
+    --cor-sucesso-fundo: #d4edda;
+    --cor-sucesso-texto: #155724;
+    --cor-sucesso-borda: #c3e6cb;
+    --cor-erro-fundo: #f8d7da;
+    --cor-erro-texto: #721c24;
+    --cor-erro-borda: #f5c6cb;
+    --cor-desabilitado-fundo: #eee;
+    --cor-desabilitado-texto: #888;
+    --cor-botao-desabilitado: #ccc;
 }
 
+/* RESET E NORMALIZAÇÃO */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     font-family: 'Nunito', sans-serif;
     font-weight: 400;
     line-height: 1.6;
-    background-color: var(--color-bg-light); 
-    color: var(--color-text);
+    background-color: var(--cor-fundo-claro);
+    color: var(--cor-texto);
 }
 
-/* --- 2. cabeçalho flutuante --- */
+/* CONTAINER PADRÃO (Mesclado e Unificado) */
+.conteiner {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0; /* Padding lateral zerado conforme sua última definição */
+}
+
+
+/* ==========================================================================
+   2. CABEÇALHO E NAVEGAÇÃO
+   ========================================================================== */
 header {
-    position: absolute; 
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    z-index: 10; 
+    z-index: 50;
     display: flex;
     flex-direction: column;
-    background-color: transparent; 
+    background-color: transparent;
 }
 
-.top-bar {
+.barra-topo {
     height: 8px;
     width: 100%;
-    background-color: var(--color-secondary);
+    background-color: var(--cor-secundaria);
 }
 
-.main-nav {
+.nav-principal {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
     padding: 20px 5%;
-    background-color: var(--color-bg-white);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: var(--cor-fundo-branco);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
-.main-nav h1, .main-nav a {
-    color: var(--color-primary-brand); 
-    text-decoration: none;
-}
-
-.main-nav h1 {
+/* LOGOTIPO NO CABEÇALHO */
+.nav-principal h1 {
     font-family: 'Momo Trust Display', sans-serif;
-    font-size: 1.8rem;
-}
-
-.main-nav nav ul {
-    list-style-type: none;
-}
-
-.main-nav nav li {
-    display: inline-block;
-    margin: 0 15px;
-}
-
-.main-nav nav a {
-    font-weight: bold;
-}
-
-.main-nav nav a:hover {
-    color: var(--color-accent); 
-}
-
-/* --- 3. hero/fullscreen --- */
-.hero {
-    min-height: 100vh;
-    width: 100%;
-    background-color: var(--color-primary-brand);
-    color: var(--color-bg-white);
+    font-size: 1.8rem; /* Voltando ao original conforme pedido */
     display: flex;
-    justify-content: center;
     align-items: center;
-    padding: 0 5%;
+    font-weight: 300;
 }
 
-.hero-content {
-    max-width: 960px;
-    width: 100%;
-    text-align: left;
-}
-
-.hero h2 {
-    font-family: 'Momo Trust Display', sans-serif;
-    font-size: 3.5rem;
-    margin-bottom: 15px;
-}
-
-.hero p {
-    font-size: 1.2rem;
-    margin-bottom: 30px;
-    max-width: 500px;
-}
-
-.cta-button {
-    display: inline-block;
-    background-color: var(--color-accent); 
-    color: var(--color-bg-white);
-    font-size: 1.1rem;
-    font-weight: bold;
-    text-decoration: none;
-    padding: 15px 30px;
-    border-radius: 50px;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.cta-button:hover {
-    background-color: var(--color-accent-light);
-    color: var(--color-bg-white);
-    transform: scale(1.05);
-}
-
-/* --- 4. quem somos --- */
-.about-us {
-    width: 90%;
-    max-width: 1300px;
-    margin: 40px auto;
-    padding: 30px;
-    background-color: var(--color-bg-white);
-    border-radius: 40px;
-    text-align: center;
-}
-
-.about-us h2 {
-    font-family: 'Momo Trust Display', sans-serif;
-    font-size: 2.5rem;
-    color: var(--color-primary-dark);
-    margin-bottom: 20px;
-
-}
-
-.about-us p {
-    font-size: 1.1rem;
-    line-height: 1.7;
-    max-width: 800px;
-    margin: 0 auto;
-        text-align: justify;
-}
-
-/* --- 5. rodapé --- */
-footer {
-    background-color: var(--color-primary-brand);
-    color: var(--color-bg-white);
-    padding: 60px 0 0 0;
-    margin-top: 40px;
-}
-
-.footer-content {
-    width: 90%;
-    max-width: 1300px;
-    margin: 0 auto;
-}
-
-.footer-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 30px;
-}
-
-.footer-column h4 {
-    font-family: 'Momo Trust Display', sans-serif;
-    color: var(--color-bg-white);
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-}
-
-.footer-column p {
-    margin-bottom: 10px;
-    line-height: 1.7;
-}
-
-.footer-column ul {
-    list-style: none;
-}
-
-.footer-column ul li {
-    margin-bottom: 10px;
-}
-
-.footer-column a {
-    color: var(--color-bg-white);
+.nav-principal a {
+    color: var(--cor-primaria-escura);
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
-.footer-column a:hover {
-    color: var(--color-accent);
+/* Configuração do Link com Logo + Texto */
+.logo-link {
+    display: flex;
+    align-items: center; /* Centraliza verticalmente */
+    gap: 10px; /* Espaço entre a imagem e o texto */
+    text-decoration: none;
+    color: var(--cor-primaria-escura);
 }
 
-.footer-bottom {
-    text-align: center;
-    margin-top: 40px;
-    padding: 30px 0;
-    border-top: 1px solid var(--color-primary-dark); 
+/* Tamanho da Logo */
+.logo-topo {
+    height: 50px; 
+    width: auto;
+    object-fit: contain;
 }
 
-/* --- 6. galeria dos animais --- */
-.animal-gallery {
+/* MENU DE NAVEGAÇÃO */
+.nav-principal nav ul {
+    list-style-type: none;
+}
+
+.nav-principal nav li {
+    display: inline-block;
+    margin: 0 15px;
+}
+
+.nav-principal nav a {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.nav-principal nav a:hover {
+    color: var(--cor-destaque);
+}
+
+
+/* ==========================================================================
+   3. SEÇÃO HEROI (DESTAQUE PRINCIPAL)
+   ========================================================================== */
+.heroi {
+    min-height: 100vh;
+    width: 100%;
+    background: linear-gradient(135deg, var(--cor-primaria-clara) 0%, var(--cor-primaria-escura) 100%);
+    color: var(--cor-fundo-branco);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.conteudo-heroi {
+    display: flex;
+    align-items: stretch;
+    gap: 40px;
+    min-height: 100vh;
+    width: 100%;
+    padding-top: 80px;
+    padding-bottom: 0;
+    position: relative;
+    z-index: auto;
+    max-width: 1300px; /* Hero mantém um max-width levemente menor internamente */
+}
+
+.heroi-esquerda {
+    flex: 1;
+    max-width: 55%;
+    padding-right: 20px;
+    align-self: center;
+    margin-bottom: 60px;
+    position: relative;
+    z-index: 10;
+}
+
+.selo-heroi {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background-color: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #f0f0f0;
+    margin-bottom: 25px;
+    backdrop-filter: blur(4px);
+}
+
+.heroi-esquerda h2 {
+    font-family: 'Momo Trust Display', sans-serif;
+    font-size: 4rem;
+    margin-bottom: 20px;
+    line-height: 1.1;
+    color: var(--cor-fundo-branco);
+    font-weight: 400;
+}
+
+.heroi-esquerda h2 .destaque {
+    color: var(--cor-destaque);
+    display: block;
+}
+
+.heroi-esquerda p {
+    font-size: 1.25rem;
+    margin-bottom: 40px;
+    max-width: 550px;
+    line-height: 1.6;
+    color: var(--cor-fundo-branco);
+    font-weight: 300;
+    opacity: 0.95;
+}
+
+.botoes-heroi {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.heroi-direita {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    max-width: 55%;
+    height: 100%;
+    position: relative;
+    padding-top: 90px;
+    padding-bottom: 0;
+    z-index: 1;
+}
+
+.figura-heroi {
+    width: 450px;
+    height: 650px;
+    background-color: var(--cor-destaque-clara);
+    border-radius: 230px;
+    overflow: hidden;
+    box-shadow: var(--sombra-cartao);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 50px;
+    backdrop-filter: blur(4px);
+    background: linear-gradient(135deg, var(--cor-destaque-clara) 0%, var(--cor-destaque-escura) 100%);
+}
+
+.imagem-heroi {
+    width: 125%;
+    height: auto;
+    max-height: none;
+    object-fit: cover;
+    display: block;
+    transform: translateY(40px);
+}
+
+.heroi::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    background-color: var(--cor-fundo-claro);
+    border-top-left-radius: 50% 100px;
+    border-top-right-radius: 50% 100px;
+    z-index: 5;
+}
+
+
+/* ==========================================================================
+   4. COMPONENTES DE BOTÕES
+   ========================================================================== */
+.botao-chamada,
+.botao-formulario,
+.botao-cartao-animal {
+    display: inline-block;
+    background-color: var(--cor-destaque);
+    color: var(--cor-fundo-branco);
+    font-size: 1.05rem;
+    font-weight: 700;
+    text-decoration: none;
+    padding: 14px 30px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.botao-chamada:hover,
+.botao-formulario:hover,
+.botao-cartao-animal:hover {
+    background-color: var(--cor-destaque-clara);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.botao-secundario {
+    display: inline-block;
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    color: var(--cor-fundo-branco);
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 14px 28px;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.botao-secundario:hover {
+    background-color: var(--cor-fundo-branco);
+    color: var(--cor-primaria-escura);
+    border-color: var(--cor-fundo-branco);
+    transform: translateY(-3px);
+}
+
+/* Botão Branco (Usado na caixa de destaque) */
+.botao-branco {
+    display: inline-block;
+    background-color: var(--cor-fundo-branco);
+    color: var(--cor-destaque-escura); /* Texto verde escuro */
+    font-weight: 700;
+    padding: 12px 35px;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.botao-branco:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Botões de Filtro da Galeria */
+.filtros-galeria {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    max-width: 1400px;
+}
+
+.botao-filtro {
+    background-color: transparent;
+    border: 2px solid var(--cor-destaque);
+    color: var(--cor-destaque-escura);
+    padding: 10px 25px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    max-width: 1400px;
+}
+
+.botao-filtro:hover,
+.botao-filtro.ativo {
+    background-color: var(--cor-destaque);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+
+/* ==========================================================================
+   5. SEÇÃO SOBRE NÓS
+   ========================================================================== */
+.sobre-nos {
     width: 90%;
-    max-width: 1300px;
+    max-width: 1400px;
     margin: 40px auto;
-    padding: 30px;
-    /* background-color: var(--color-bg-white); */
+    padding: 50px;
+    background-color: var(--cor-fundo-branco);
     border-radius: 40px;
     text-align: center;
+    box-shadow: var(--sombra-cartao);
 }
 
-.gallery-title {
+.sobre-nos h2 {
     font-family: 'Momo Trust Display', sans-serif;
     font-size: 2.5rem;
-    color: var(--color-primary-dark);
-    margin-bottom: 30px; 
+    color: var(--cor-primaria-escura);
+    margin-bottom: 25px;
+    font-weight: 600;
 }
 
-.gallery-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 320px));
-    gap: 20px; 
+.sobre-nos p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    max-width: 900px;
+    margin: 0 auto;
+    color: #555;
+}
+
+
+/* ==========================================================================
+   6. SEÇÃO NOSSA MISSÃO 
+   ========================================================================== */
+.secao-missao {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 50px;  
+    padding: 10px;
+    margin-top: 40px;
+    max-width: 1400px;
+    margin: 40px auto;
+    padding: 50px;
+    background-color: var(--cor-fundo-branco);
+    border-radius: 40px;
+    text-align: center;
+    box-shadow: var(--sombra-cartao);
+}
+
+.missao-esquerda {
+    flex: 1;
+    display: flex;
     justify-content: center;
+    align-items: center;
+}
+
+.figura-missao {
+    width: 420px;
+    height: 420px;
+    background: linear-gradient(135deg, var(--cor-destaque-clara) 0%, var(--cor-destaque-escura) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: var(--sombra-cartao);
+}
+
+.imagem-missao {
+    width: 120%;
+    height: auto;
+    object-fit: contain;
+    transform: translate(-40px, 118px);
+    padding-left: 100px;
+    padding-top: 500px;
+}
+
+.missao-direita {
+    flex: 1;
+    text-align: left;
+}
+
+.missao-direita h2 {
+    font-family: 'Momo Trust Display', sans-serif;
+    font-size: 3rem;
+    color: var(--cor-primaria-escura);
+    margin-bottom: 20px;
+}
+
+.missao-direita p {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 20px;
+    line-height: 1.6;
+    text-align: justify;
+    padding-right: 50px;
 }
 
 
-/* --- 7. card animal - estilo polaroid --- */
-.animal-card {
+/* ==========================================================================
+   7. GALERIA DE ANIMAIS (CARDS)
+   ========================================================================== */
+.galeria-animais {
+    width: 100%;
+    max-width: 1400px;
+    margin: 80px auto;
+    text-align: center;
+    padding: 20px 0px 20px 0px;
+}
+
+.titulo-galeria {
+    font-family: 'Momo Trust Display', sans-serif;
+    font-size: 2.8rem;
+    color: var(--cor-primaria-escura);
+    margin-bottom: 40px;
+    font-weight: 600;
+}
+
+.conteiner-galeria {
+    display: grid;
+    /* Colunas de no mínimo 280px e no MÁXIMO 360px para não esticar demais */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 360px));
+    gap: 25px; 
+    justify-content: center;
+    
+    /* Transição suave de opacidade para o filtro */
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    opacity: 1;
+    transform: translateY(0);
+    max-width: 1400px;
+}
+
+.conteiner-galeria.escondido {
+    opacity: 0;
+}
+
+.cartao-animal {
     background-color: #fff;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); 
-    text-align: center; 
+    border-radius: 24px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    box-shadow: var(--sombra-cartao);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    padding: 15px; 
-    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+    width: 100%;       
+    max-width: 330px;  /* Limita a largura para não virar banner */
+    margin: 0 auto;    
 }
 
-.animal-card:hover {
+.cartao-animal:hover {
     transform: translateY(-5px) rotate(2deg);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
 }
 
-.animal-card-image {
-    width: 100%; /* espaço dentro do padding */
-    height: 200px; 
-    overflow: hidden; 
+.imagem-cartao-animal {
+    width: 100%;
+    height: 240px;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 15px;
 }
 
-.animal-card-image img {
+.imagem-cartao-animal img {
     width: 100%;
     height: 100%;
-    object-fit: cover; 
+    object-fit: cover;
     display: block;
-    border-radius: 15px;
+    transition: transform 0.5s ease;
 }
 
-.animal-card-content {
-    /* um espaço acima p/ desgrudar da foto */
-    padding-top: 15px; 
-}
-
-.animal-card h3 {
+.cartao-animal h3 {
     font-size: 1.5rem;
     font-family: 'Momo Trust Display', sans-serif;
-    color: var(--color-primary-brand);
-    margin-bottom: 10px;
-}
-
-.animal-card p {
-    font-size: 0.9rem;
-    color: var(--color-text);
+    color: var(--cor-primaria-escura);
     margin-bottom: 5px;
 }
 
-.animal-card-button {
-    display: inline-block;
-    margin-top: 15px;
-    background-color: var(--color-accent);
-    color: var(--color-bg-white);
-    padding: 8px 15px;
-    text-decoration: none;
-    font-weight: bold;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    transition: background-color 0.3s ease;
+.cartao-animal p {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 5px;
 }
 
-.animal-card-button:hover {
-    background-color: var(--color-accent-light);
+.botao-cartao-animal {
+    margin-top: 15px;
+    width: 100%;
+    font-size: 0.95rem;
+    padding: 12px 0;
+    box-shadow: none;
+}
+
+
+/* ==========================================================================
+   8. SEÇÃO "ONDE ESTAMOS" (MAPA + INFO)
+   ========================================================================== */
+.onde-estamos {
+    width: 100%;
+    max-width: 1400px;
+    /* Margens ajustadas para espaçamento correto */
+    margin: 0px auto 150px auto; 
+    padding: 0 0px; 
+}
+
+.onde-estamos-grid {
+    background-color: #fff;
+    border-radius: 24px;
+    box-shadow: var(--sombra-cartao);
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1400px;
+}
+
+/* Parte de Cima (Texto) */
+.onde-info {
+    padding: 30px 10px;
+    text-align: center;
+    display: flex;
+    flex-wrap: wrap; 
+    justify-content: center;
+}
+
+.bloco-texto {
+    flex: 1;
+    min-width: 250px;
+}
+
+.bloco-texto strong {
+    display: block;
+    color: var(--cor-destaque-escura);
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 800;
+}
+
+.bloco-texto p {
+    font-size: 1.05rem;
+    color: #555;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Parte de Baixo (Mapa) */
+.mapa {
+    width: 100%;
+    height: 450px;
+}
+
+.mapa iframe {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+
+/* ==========================================================================
+   9. FORMULÁRIO DE ADOÇÃO
+   ========================================================================== */
+.secao-formulario {
+    padding-top: 140px;
+    max-width: 900px;
+    margin: 150px auto;
+    padding: 60px 50px 50px 50px;
+    background-color: var(--cor-fundo-branco);
+    border-radius: 20px;
+    box-shadow: var(--sombra-cartao);
+}
+
+.cabecalho-formulario {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.cabecalho-formulario h2 {
+    font-family: 'Momo Trust Display', sans-serif;
+    font-size: 2.5rem;
+    color: var(--cor-primaria-escura);
+}
+
+.cabecalho-formulario p {
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 10px auto 0;
+    color: #666;
+}
+
+.caixa-info-animal {
+    display: flex;
+    align-items: center;
+    background-color: var(--cor-fundo-claro);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.caixa-info-animal img {
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-right: 20px;
+}
+
+.caixa-info-animal h3 {
+    font-family: 'Momo Trust Display', sans-serif;
+    font-size: 1.6rem;
+    color: var(--cor-primaria-escura);
+    margin: 0;
+}
+
+.secao-formulario h4,
+.secao-formulario h5 {
+    font-family: 'Momo Trust Display', sans-serif;
+    color: var(--cor-primaria-escura);
+    font-size: 1.4rem;
+    border-bottom: 2px solid var(--cor-borda);
+    padding-bottom: 8px;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    font-weight: 100;
+}
+
+.grupo-formulario {
+    margin-bottom: 20px;
+}
+
+.grupo-formulario label {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #444;
+    font-size: 0.95rem;
+}
+
+.grupo-formulario input,
+.grupo-formulario textarea,
+.grupo-formulario select.select-formulario {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    background-color: #fff;
+    transition: all 0.2s ease;
+    color: #333;
+}
+
+.grupo-formulario input:focus,
+.grupo-formulario textarea:focus,
+.grupo-formulario select.select-formulario:focus {
+    border-color: var(--cor-destaque);
+    box-shadow: 0 0 0 3px rgba(var(--cor-primaria-marca-rgb), 0.15);
+    outline: none;
+}
+
+.grupo-formulario select.select-formulario {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%2%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23333%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-13%205.4A17.5%2017.5%0%200%200%200%2082.2c0%205%201.8%209.3%205.4%2013l128%20127.9c3.6%203.6%207.8%205.4%2013%205.4s9.4-1.8%2013-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-13%200-5-1.9-9.2-5.5-12.6z%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 0.65em auto;
+}
+
+.grupo-formulario select.select-formulario:disabled {
+    background-color: #f5f5f5;
+    color: #999;
+}
+
+.grade-formulario {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.botao-formulario {
+    margin-top: 30px;
+    width: 100%;
+    font-size: 1.1rem;
+}
+
+.botao-formulario:disabled {
+    background-color: var(--cor-botao-desabilitado);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.alerta-formulario {
+    padding: 15px;
+    margin-bottom: 25px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    display: block;
+}
+
+.alerta-sucesso {
+    background-color: var(--cor-sucesso-fundo);
+    color: var(--cor-sucesso-texto);
+    border: 1px solid var(--cor-sucesso-borda);
+}
+
+.alerta-erro {
+    background-color: var(--cor-erro-fundo);
+    color: var(--cor-erro-texto);
+}
+
+
+/* ==========================================================================
+   10. MODAL DE SUCESSO (POPUP)
+   ========================================================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal-overlay.mostrar {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-conteudo {
+    background-color: var(--cor-fundo-branco);
+    padding: 40px;
+    border-radius: 24px;
+    text-align: center;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.mostrar .modal-conteudo {
+    transform: translateY(0);
+}
+
+.modal-icone {
+    font-size: 4rem;
+    color: var(--cor-sucesso-texto);
+    margin-bottom: 20px;
+}
+
+.modal-titulo {
+    font-family: 'Momo Trust Display', sans-serif;
+    font-size: 2rem;
+    color: var(--cor-primaria-escura);
+    margin-bottom: 15px;
+}
+
+.modal-texto {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+
+/* ==========================================================================
+   11. RODAPÉ FINAL (Layout Petz + Cores Patinhas)
+   ========================================================================== */
+
+/* 1. CAIXA FLUTUANTE DE DÚVIDAS */
+.secao-duvidas {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px;
+    /* Puxa o rodapé pra cima */
+    margin-bottom: -70px; 
+}
+
+.box-destaque {
+    background: var(--cor-destaque);
+    border-radius: 24px;
+    padding: 50px 40px;
+    text-align: center;
+    color: var(--cor-fundo-branco);
+    box-shadow: var(--sombra-cartao);
+}
+
+.box-destaque h2 {
+    font-family: 'Momo Trust Display', sans-serif;
+    font-size: 2.2rem;
+    margin-bottom: 15px;
+    color: var(--cor-fundo-branco);
+}
+
+.box-destaque p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 30px;
+    color: var(--cor-fundo-branco);
+}
+
+/* 2. RODAPÉ AZUL CURVADO */
+.rodape {
+    background: linear-gradient(135deg, var(--cor-primaria-clara) 0%, var(--cor-primaria-escura) 100%);
+    color: var(--cor-fundo-branco);
+    padding-top: 140px; 
+    padding-bottom: 40px;
+    border-top-left-radius: 50% 100px;
+    border-top-right-radius: 50% 100px;
+    margin-top: 0;
+}
+
+.rodape .conteudo-rodape {
+    width: 90%;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Grade de Colunas */
+.rodape .grade-rodape {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
+    text-align: center; 
+}
+
+.rodape h4 {
+    font-family: 'Momo Trust Display', sans-serif;
+    color: var(--cor-fundo-branco);
+    margin-bottom: 20px;
+    font-size: 1.4rem;
+    font-weight: 100;
+}
+
+.rodape ul {
+    list-style: none;
+    padding: 0; 
+    margin: 0;
+}
+
+.rodape li {
+    margin-bottom: 12px;
+}
+
+.rodape a,
+.rodape p {
+    color: var(--cor-fundo-branco);
+    opacity: 0.9;
+    text-decoration: none;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.rodape a:hover {
+    text-decoration: underline;
+    opacity: 1;
+}
+
+.frase-destaque {
+    font-family: 'Momo Trust Display', sans-serif;
+    margin-top: 30px; 
+    text-transform: uppercase;
+    letter-spacing: 3px; 
+    text-align: center;
+    color: var(--cor-secundaria) !important; 
+    font-weight: 600;
+    font-size: 1.50rem !important;    
+}
+
+.rodape-inferior {
+    border-top: 1px solid rgba(255,255,255,0.2);
+    margin-top: 50px;
+    padding-top: 20px;
+    font-size: 0.9rem;
+    opacity: 0.7;
+    text-align: center;
+}
+
+
+/* ==========================================================================
+   12. MEDIA QUERIES GERAIS
+   ========================================================================== */
+@media (max-width: 900px) {
+    /* HERO */
+    .conteudo-heroi {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding-top: 120px;
+    }
+    .heroi-esquerda {
+        max-width: 90%;
+        padding-right: 0;
+        margin-bottom: 40px;
+        z-index: 10;
+    }
+    .heroi-direita {
+        max-width: 80%;
+        justify-content: center;
+        align-items: flex-end;
+        margin-top: 0;
+        height: auto;
+        z-index: 6;
+    }
+    .imagem-heroi {
+        max-width: 350px;
+        max-height: 400px;
+        margin-bottom: 0;
+    }
+    
+    /* MISSÃO */
+    .secao-missao {
+        flex-direction: column;
+        text-align: center;
+    }
+    .figura-missao {
+        width: 300px;
+        height: 300px;
+    }
+    .missao-direita {
+        text-align: center;
+    }
+
+    /* ONDE ESTAMOS (MAPA) */
+    .onde-info {
+        flex-direction: column;
+        gap: 40px;
+    }
+    .mapa {
+        height: 350px;
+    }
+}
+
+@media (max-width: 768px) {
+    /* RODAPÉ E CAIXA */
+    .secao-duvidas {
+        margin-bottom: -50px;
+    }
+    .rodape {
+        padding-top: 120px;
+        border-top-left-radius: 20% 30px;
+        border-top-right-radius: 20% 30px;
+    }
+}
+
+@media (max-width: 600px) {
+    .heroi-esquerda h2 {
+        font-size: 2.5rem;
+    }
+    .botoes-heroi {
+        flex-direction: column;
+    }
+    .botao-chamada,
+    .botao-secundario {
+        width: 100%;
+    }
+    .grade-formulario {
+        grid-template-columns: 1fr;
+    }
+    .secao-formulario {
+        padding: 100px 25px 30px 25px;
+    }
 }
