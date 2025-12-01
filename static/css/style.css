@@ -499,7 +499,7 @@ header {
 .conteiner-galeria {
     display: grid;
     /* Colunas de no mínimo 280px e no MÁXIMO 360px para não esticar demais */
-    grid-template-columns: repeat(auto-fit, minmax(280px, 360px));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 330px));
     gap: 25px; 
     justify-content: center;
     

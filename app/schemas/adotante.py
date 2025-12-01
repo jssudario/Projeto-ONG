@@ -10,7 +10,8 @@ class AdotanteBase(BaseModel):
     estado: str = Field(min_length=2, max_length=2)
     cidade: str
     rua: str
-    numero: str | None = None
+    numero: str
+    bairro: str
     complemento: str | None = None
 
 class AdotanteCreate(AdotanteBase):
@@ -26,6 +27,7 @@ class AdotanteUpdate(AdotanteBase):
     cidade: str | None = None
     rua: str | None = None
     numero: str | None = None
+    bairro: str | None = None
     complemento: str | None = None
 
 class AdotanteOut(AdotanteBase):

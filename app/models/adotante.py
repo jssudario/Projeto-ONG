@@ -15,7 +15,8 @@ class Adotante(Base):
     estado = Column(String(2), nullable=False)  # Sigla
     cidade = Column(String(100), nullable=False)
     rua = Column(String(200), nullable=False)
-    numero = Column(String(30), nullable=True)
+    numero = Column(String(30), nullable=False)
+    bairro = Column(String(100), nullable=False)
     complemento = Column(String(100), nullable=True)
 
     # Relacionamentos: Um Adotante pode ter muitas Solicitações

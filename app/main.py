@@ -26,20 +26,6 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(title="Patinhas API")
 
 
-# Definição de exceção personalizada para erros de deleção no painel administrativo
-class ErroDelecao(Exception):
-    def __init__(self, message: str):
-        self.message = message
-
-
-# Manipulador de exceção global para capturar ErroDelecao
-# Retorna uma resposta em texto plano (PlainTextResponse) com código HTTP 400 (Bad Request)
-# Isso evita a renderização de HTML padrão do framework em alertas do frontend administrativo
-@app.exception_handler(ErroDelecao)
-async def delete_exception_handler(request: Request, exc: ErroDelecao):
-    return PlainTextResponse(str(exc.message), status_code=400)
-
-
 # Configuração de rota para servir arquivos estáticos (imagens de upload)
 # Mapeia a URL "/static/uploads" para o diretório físico "static/uploads"
 app.mount(
@@ -101,16 +87,6 @@ class AnimalAdmin(ModelView, model=Animal):
     name = "Animal"
     name_plural = "Animais"
     icon = "fa-solid fa-paw"
-
-    async def delete_model(self, request, pk):
-        """
-        Sobrescreve o método de deleção padrão para implementar validação de integridade
-        Captura exceções de integridade (Foreign Key) e levanta ErroDelecao com mensagem amigável
-        """
-        try:
-            await super().delete_model(request, pk)
-        except IntegrityError:
-            raise ErroDelecao("Não é possível deletar! Este animal tem vínculos com solicitações.")
 
     column_list = [
         Animal.id,
@@ -196,6 +172,10 @@ class AdotanteAdmin(ModelView, model=Adotante):
     """
     Configuração da interface administrativa para o modelo Adotante
     """
+    icon = "fa-solid fa-user"
+    name = "Adotante"
+    name_plural = "Adotantes"
+    
     column_list = [
         Adotante.id,
         Adotante.nome_completo,
@@ -217,13 +197,9 @@ class AdotanteAdmin(ModelView, model=Adotante):
         Adotante.cidade: "Cidade",
         Adotante.rua: "Rua",
         Adotante.numero: "Número",
+        Adotante.bairro: "Bairro",
         Adotante.complemento: "Complemento"
     }
-
-    icon = "fa-solid fa-user"
-    name = "Adotante"
-    name_plural = "Adotantes"
-
 
 class SolicitacaoAdmin(ModelView, model=Solicitacao):
     """
@@ -347,13 +323,15 @@ class UserAdmin(ModelView, model=User):
     """
     Configuração da interface administrativa para o modelo User
     """
+    icon = "fa-solid fa-user-shield"
+    name = "Usuário"
+    name_plural = "Usuários"
+    
     column_list = [
         User.id,
         User.username
     ]
-    icon = "fa-solid fa-user-shield"
-    name = "Usuário"
-    name_plural = "Usuários"
+    
 
 
 # ===========================================
@@ -362,8 +340,7 @@ class UserAdmin(ModelView, model=User):
 
 # Inicialização do painel administrativo sem autenticação (para fins de desenvolvimento/teste)
 # Para habilitar segurança, utilize o parâmetro authentication_backend
-admin = Admin(app, engine)
-# admin = Admin(app, engine, authentication_backend=authentication_backend)
+admin = Admin(app, engine, authentication_backend=authentication_backend)
 
 admin.add_view(AnimalAdmin)
 admin.add_view(AdotanteAdmin)
