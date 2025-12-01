@@ -76,11 +76,15 @@ O projeto opera com o Backend e o Frontend rodando em portas distintas (Simulaç
 
 ### Passo 1: Iniciar a API (Backend)
 
-No terminal, execute:
+No terminal, navegue até a pasta do código fonte e inicie o servidor:
 
 ```bash
-uvicorn patinhas.app.main:app --reload
-```
+# 1. Entre na pasta do pacote principal
+cd patinhas
+
+# 2. Inicie o servidor
+uvicorn app.main:app --reload
+````
 
 *O servidor iniciará em `http://localhost:8000`*
 
