@@ -25,6 +25,14 @@ def create_adotante(
     payload: adotante_schema.AdotanteCreate, 
     repo: AdotanteRepository = Depends()
 ): 
+    
+    adotante_existente = repo.get_by_email(payload.email)
+    
+    if adotante_existente:
+        # Se já existe, retornamos ele mesmo
+        # O frontend recebe o ID e prossegue para criar a solicitação
+        return adotante_existente
+    
     # Pega a data de nascimento do payload (que veio do formulário)
     data_nascimento = payload.data_nascimento
     
@@ -32,7 +40,7 @@ def create_adotante(
     # (hoje - 18 anos)
     data_maioridade = date.today() - timedelta(days=18*365.25) 
     
-    # Se a data de nascimento for DEPOIS da data de maioridade, a pessoa é menor.
+    # Se a data de nascimento for DEPOIS da data de maioridade, a pessoa é menor
     if data_nascimento > data_maioridade:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
