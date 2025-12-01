@@ -2,6 +2,32 @@
 
 Este repositório contém o código-fonte de um sistema web completo para gerenciamento de adoção de animais, desenvolvido para Organizações Não Governamentais (ONGs). A plataforma utiliza uma arquitetura desacoplada, com uma API RESTful robusta no backend e uma interface responsiva no frontend.
 
+## Estrutura do Projeto
+
+Abaixo, a organização dos diretórios principais para facilitar a navegação:
+
+```text
+Projeto-ONG/
+│
+├── patinhas/               # Diretório Principal da Aplicação
+│   ├── app/                # Código Fonte do Backend (FastAPI)
+│   │   ├── core/           # Configurações (Database, Security)
+│   │   ├── models/         # Modelos do Banco de Dados (SQLAlchemy)
+│   │   ├── routers/        # Rotas da API (Endpoints)
+│   │   ├── services/       # Regras de Negócio
+│   │   └── main.py         # Arquivo de Entrada da Aplicação
+│   │
+│   ├── static/             # Frontend (Arquivos Públicos)
+│   │   ├── css/            # Estilos
+│   │   ├── js/             # Scripts (Lógica do Frontend)
+│   │   ├── img/            # Imagens do Site
+│   │   └── uploads/        # Fotos dos Animais
+│   │
+│   └── requirements.txt    # Dependências do Python
+│
+└── README.md               # Documentação do Projeto
+```
+
 ## Visão Geral do Projeto
 
 O sistema é composto por:
