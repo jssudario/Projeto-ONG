@@ -12,7 +12,11 @@ class Adotante(Base):
     data_nascimento = Column(Date, nullable=False)
     email = Column(String(255), nullable=False, unique=True)
     telefone = Column(String(15), nullable=False)
-    endereco = Column(Text, nullable=False)
+    estado = Column(String(2), nullable=False)  # Sigla
+    cidade = Column(String(100), nullable=False)
+    rua = Column(String(200), nullable=False)
+    numero = Column(String(30), nullable=True)
+    complemento = Column(String(100), nullable=True)
 
     # Relacionamentos: Um Adotante pode ter muitas Solicitações
     solicitacoes = relationship("Solicitacao", back_populates="adotante")

@@ -1,14 +1,12 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-# Define o endereço do database
-SQLALCHEMY_DATABASE_URL = "sqlite:///./patinhas.db"
+# URL de Conexão do PostgreSQL
+# Formato: postgresql://USUARIO:SENHA@ENDERECO/NOME_DO_BANCO
+SQLALCHEMY_DATABASE_URL = "postgresql://postgres:1234@localhost/patinhas"
 
-# Cria a engine
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
-    connect_args={"check_same_thread": False}  
-)
+# Cria a engine (No Postgres não precisa do check_same_thread)
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
 # Cria a fábrica de sessões
 SessionLocal = sessionmaker(

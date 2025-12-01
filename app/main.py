@@ -1,10 +1,12 @@
 from fastapi import FastAPI
+from starlette.requests import Request
+from starlette.responses import Response, PlainTextResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqladmin import Admin, ModelView
 from wtforms.fields import SelectField
 from markupsafe import Markup
-from starlette.datastructures import UploadFile
+from sqlalchemy.exc import IntegrityError
 
 from app.core.database import engine
 from app.core.base import Base
@@ -16,15 +18,37 @@ from app.models.user import User
 from app.routers import animais, adotantes, solicitacoes, visitas
 from app.admin_auth import authentication_backend
 
-# Criar as tabelas no sqlite com base no models
+# Inicializa a estrutura do banco de dados criando tabelas para os modelos definidos
+# A operação ignora tabelas já existentes
 Base.metadata.create_all(bind=engine)
 
-# Instancia do app, inicia o server
+# Inicialização da instância principal do framework FastAPI
 app = FastAPI(title="Patinhas API")
 
-# Servir arquivos enviados
-app.mount("/static/uploads", StaticFiles(directory="static/uploads"), name="static_uploads")
 
+# Definição de exceção personalizada para erros de deleção no painel administrativo
+class ErroDelecao(Exception):
+    def __init__(self, message: str):
+        self.message = message
+
+
+# Manipulador de exceção global para capturar ErroDelecao
+# Retorna uma resposta em texto plano (PlainTextResponse) com código HTTP 400 (Bad Request)
+# Isso evita a renderização de HTML padrão do framework em alertas do frontend administrativo
+@app.exception_handler(ErroDelecao)
+async def delete_exception_handler(request: Request, exc: ErroDelecao):
+    return PlainTextResponse(str(exc.message), status_code=400)
+
+
+# Configuração de rota para servir arquivos estáticos (imagens de upload)
+# Mapeia a URL "/static/uploads" para o diretório físico "static/uploads"
+app.mount(
+    "/static/uploads", 
+    StaticFiles(directory="static/uploads"), 
+    name="static_uploads"
+)
+
+# Mapeamento de status internos do banco de dados para rótulos legíveis na interface
 STATUS_LABELS = {
     "pendente": "Pendente",
     "em_avaliacao": "Em avaliação",
@@ -52,11 +76,6 @@ ESPECIE_LABELS = {
     "gato": "Gato",
 }
 
-ESPECIE_CHOICES = [
-    ("cachorro", "Cachorro"),
-    ("gato", "Gato"), 
-]
-
 SEXO_LABELS = {
     "macho": "Macho",
     "femea": "Fêmea",
@@ -69,17 +88,40 @@ PORTE_LABELS = {
     "nao_se_aplica": "Não se aplica",
 }
 
-# Views do SQLAdmin
+
+# ===========================================
+# Configuração das Views do SQLAdmin
+# ===========================================
+
 class AnimalAdmin(ModelView, model=Animal):
+    """
+    Configuração da interface administrativa para o modelo Animal
+    Define colunas visíveis, formatação de dados e campos de formulário
+    """
     name = "Animal"
     name_plural = "Animais"
     icon = "fa-solid fa-paw"
 
-    column_list = [Animal.id, Animal.nome, Animal.especie, Animal.status, Animal.foto]
+    async def delete_model(self, request, pk):
+        """
+        Sobrescreve o método de deleção padrão para implementar validação de integridade
+        Captura exceções de integridade (Foreign Key) e levanta ErroDelecao com mensagem amigável
+        """
+        try:
+            await super().delete_model(request, pk)
+        except IntegrityError:
+            raise ErroDelecao("Não é possível deletar! Este animal tem vínculos com solicitações.")
 
-    # Thumbnail da foto na listagem + formatação de rótulos
+    column_list = [
+        Animal.id,
+        Animal.nome,
+        Animal.especie,
+        Animal.status,
+        Animal.foto
+    ]
+
+    # Formatação condicional de colunas para exibição na listagem
     column_formatters = {
-        # "foto": lambda m, a: Markup(f'<img src="/{m.foto}" style="height:48px;">') if m.foto else "",
         "foto": lambda m, a: Markup(f'<img src="/{m.foto}" style="height:48px;">') if m.foto else "",
         "castrado": lambda m, a: BOOL_LABELS.get(m.castrado, m.castrado),
         "vacinado": lambda m, a: BOOL_LABELS.get(m.vacinado, m.vacinado),
@@ -88,6 +130,7 @@ class AnimalAdmin(ModelView, model=Animal):
         "porte": lambda m, a: PORTE_LABELS.get(m.porte, m.porte),
         "sexo": lambda m, a: SEXO_LABELS.get(m.sexo, m.sexo),
     }
+    
     column_formatters_detail = column_formatters
     column_formatters_export = column_formatters
 
@@ -95,18 +138,27 @@ class AnimalAdmin(ModelView, model=Animal):
         Animal.nome, Animal.especie, Animal.raca, Animal.sexo,
         Animal.idade_meses, Animal.porte, Animal.castrado, Animal.vacinado,
         Animal.status, Animal.data_entrada, Animal.observacoes,
-        Animal.foto,  # Campo de upload (FileType)
+        Animal.foto,
     ]
 
     column_labels = {
-        Animal.id: "ID", Animal.solicitacoes: "Solicitações",
-        Animal.nome: "Nome", Animal.especie: "Espécie", Animal.raca: "Raça",
-        Animal.sexo: "Sexo", Animal.idade_meses: "Idade (em meses)",
-        Animal.porte: "Porte", Animal.castrado: "Castrado?", Animal.vacinado: "Vacinado?",
-        Animal.status: "Status", Animal.data_entrada: "Data de entrada",
-        Animal.observacoes: "Observações", Animal.foto: "Foto",
+        Animal.id: "ID",
+        Animal.solicitacoes: "Solicitações",
+        Animal.nome: "Nome",
+        Animal.especie: "Espécie",
+        Animal.raca: "Raça",
+        Animal.sexo: "Sexo",
+        Animal.idade_meses: "Idade (em meses)",
+        Animal.porte: "Porte",
+        Animal.castrado: "Castrado?",
+        Animal.vacinado: "Vacinado?",
+        Animal.status: "Status",
+        Animal.data_entrada: "Data de entrada",
+        Animal.observacoes: "Observações",
+        Animal.foto: "Foto",
     }
 
+    # Substituição de widgets padrão por SelectField para campos enumerados
     form_overrides = {
         "especie": SelectField,
         "sexo": SelectField,
@@ -127,7 +179,6 @@ class AnimalAdmin(ModelView, model=Animal):
                 ("nao_se_aplica", "Não se aplica (Gato)"),
             ]
         },
-        # Booleans como SelectField
         "castrado": {"choices": [(False, "Não"), (True, "Sim")], "coerce": bool},
         "vacinado": {"choices": [(False, "Não"), (True, "Sim")], "coerce": bool},
         "status": {
@@ -140,8 +191,19 @@ class AnimalAdmin(ModelView, model=Animal):
         },
     }
 
+
 class AdotanteAdmin(ModelView, model=Adotante):
-    column_list = [Adotante.id, Adotante.nome_completo, Adotante.email, Adotante.telefone]
+    """
+    Configuração da interface administrativa para o modelo Adotante
+    """
+    column_list = [
+        Adotante.id,
+        Adotante.nome_completo,
+        Adotante.email,
+        Adotante.telefone,
+        Adotante.cidade,
+        Adotante.estado
+    ]
 
     column_labels = {
         Adotante.id: "ID",
@@ -151,7 +213,11 @@ class AdotanteAdmin(ModelView, model=Adotante):
         Adotante.telefone: "Telefone",
         Adotante.cpf: "CPF",
         Adotante.data_nascimento: "Data de nascimento",
-        Adotante.endereco: "Endereço",
+        Adotante.estado: "Estado (UF)",
+        Adotante.cidade: "Cidade",
+        Adotante.rua: "Rua",
+        Adotante.numero: "Número",
+        Adotante.complemento: "Complemento"
     }
 
     icon = "fa-solid fa-user"
@@ -160,14 +226,18 @@ class AdotanteAdmin(ModelView, model=Adotante):
 
 
 class SolicitacaoAdmin(ModelView, model=Solicitacao):
+    """
+    Configuração da interface administrativa para o modelo Solicitacao
+    Inclui relacionamentos com Animal e Adotante na listagem
+    """
     icon = "fa-solid fa-file-lines"
     name = "Solicitação"
     name_plural = "Solicitações"
 
     column_list = [
         Solicitacao.id,
-        "animal.nome",  # Mostra nome do animal
-        "adotante.nome_completo",  # Mostra nome do adotante
+        "animal.nome",
+        "adotante.nome_completo",
         Solicitacao.status,
         Solicitacao.data_solicitacao,
     ]
@@ -186,7 +256,6 @@ class SolicitacaoAdmin(ModelView, model=Solicitacao):
         Solicitacao.adotante_id: "Adotante ID",
     }
 
-    # Usa relacionamento direto no formulário
     form_columns = [
         Solicitacao.animal,
         Solicitacao.adotante,
@@ -196,6 +265,7 @@ class SolicitacaoAdmin(ModelView, model=Solicitacao):
     ]
 
     form_overrides = {"status": SelectField}
+
     form_args = {
         "status": {
             "choices": [
@@ -209,7 +279,7 @@ class SolicitacaoAdmin(ModelView, model=Solicitacao):
         }
     }
 
-    # Pesquisa assíncrona nos relacionamentos por nome
+    # Habilita busca assíncrona (AJAX) para campos de relacionamento
     form_ajax_refs = {
         "animal": {"fields": ("nome",)},
         "adotante": {"fields": ("nome_completo",)},
@@ -223,6 +293,9 @@ class SolicitacaoAdmin(ModelView, model=Solicitacao):
 
 
 class VisitaAdmin(ModelView, model=Visita):
+    """
+    Configuração da interface administrativa para o modelo Visita
+    """
     icon = "fa-solid fa-calendar-check"
     name = "Visita"
     name_plural = "Visitas"
@@ -247,6 +320,7 @@ class VisitaAdmin(ModelView, model=Visita):
     form_columns = [Visita.solicitacao, Visita.data_hora, Visita.retorno, Visita.observacoes]
 
     form_overrides = {"retorno": SelectField}
+
     form_args = {
         "retorno": {
             "choices": [
@@ -270,15 +344,26 @@ class VisitaAdmin(ModelView, model=Visita):
 
 
 class UserAdmin(ModelView, model=User):
-    column_list = [User.id, User.username]
+    """
+    Configuração da interface administrativa para o modelo User
+    """
+    column_list = [
+        User.id,
+        User.username
+    ]
     icon = "fa-solid fa-user-shield"
     name = "Usuário"
     name_plural = "Usuários"
 
 
-# Painel admin - LOGIN
-# admin = Admin(app, engine, authentication_backend=authentication_backend)
+# ===========================================
+# Inicialização do Painel Admin
+# ===========================================
+
+# Inicialização do painel administrativo sem autenticação (para fins de desenvolvimento/teste)
+# Para habilitar segurança, utilize o parâmetro authentication_backend
 admin = Admin(app, engine)
+# admin = Admin(app, engine, authentication_backend=authentication_backend)
 
 admin.add_view(AnimalAdmin)
 admin.add_view(AdotanteAdmin)
@@ -286,7 +371,13 @@ admin.add_view(SolicitacaoAdmin)
 admin.add_view(VisitaAdmin)
 admin.add_view(UserAdmin)
 
-# Middlewares e rotas
+
+# ===========================================
+# Middlewares e Rotas
+# ===========================================
+
+# Configuração de CORS (Cross-Origin Resource Sharing)
+# Permite que aplicações web em domínios diferentes acessem a API
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -295,12 +386,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Registro dos routers da aplicação.
 app.include_router(animais.router)
 app.include_router(adotantes.router)
 app.include_router(solicitacoes.router)
 app.include_router(visitas.router)
 
-# Teste API
+
+# Rota de verificação de saúde da API (Health Check)
 @app.get("/")
 def root():
     return {"ok": True, "message": "API funcionando"}
