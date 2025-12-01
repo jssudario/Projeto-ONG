@@ -2,30 +2,30 @@
 
 Este repositório contém o código-fonte de um sistema web completo para gerenciamento de adoção de animais, desenvolvido para Organizações Não Governamentais (ONGs). A plataforma utiliza uma arquitetura desacoplada, com uma API RESTful robusta no backend e uma interface responsiva no frontend.
 
-## Estrutura do Projeto
+## Estrutura de Diretórios
 
-Abaixo, a organização dos diretórios principais para facilitar a navegação:
+Abaixo, a organização dos arquivos dentro do diretório do projeto:
 
 ```text
-Projeto-ONG/
+patinhas/                   # Raiz do Projeto
 │
-├── patinhas/               # Diretório Principal da Aplicação
-│   ├── app/                # Código Fonte do Backend (FastAPI)
-│   │   ├── core/           # Configurações (Database, Security)
-│   │   ├── models/         # Modelos do Banco de Dados (SQLAlchemy)
-│   │   ├── routers/        # Rotas da API (Endpoints)
-│   │   ├── services/       # Regras de Negócio
-│   │   └── main.py         # Arquivo de Entrada da Aplicação
-│   │
-│   ├── static/             # Frontend (Arquivos Públicos)
-│   │   ├── css/            # Estilos
-│   │   ├── js/             # Scripts (Lógica do Frontend)
-│   │   ├── img/            # Imagens do Site
-│   │   └── uploads/        # Fotos dos Animais
-│   │
-│   └── requirements.txt    # Dependências do Python
+├── README.md               # Documentação
+├── requirements.txt        # Dependências do Python
 │
-└── README.md               # Documentação do Projeto
+├── static/                 # Frontend (Arquivos Públicos)
+│   ├── css/
+│   ├── js/
+│   ├── img/
+│   └── uploads/            # Fotos dos Animais
+│
+└── app/                    # Backend (Código Fonte API)
+    ├── admin_auth.py       # Configuração de Login do Admin
+    ├── security.py         # Lógica de Senhas e Tokens (JWT)
+    ├── main.py             # Arquivo Principal (Start)
+    ├── core/               # Configurações de Banco
+    ├── models/             # Tabelas do Banco
+    ├── routers/            # Rotas da API
+    └── services/           # Regras de Negócio
 ```
 
 ## Visão Geral do Projeto
@@ -138,7 +138,7 @@ O painel administrativo é protegido. Para o primeiro acesso, insira um usuário
 1.  Gere um hash de senha seguro no terminal:
 
     ```bash
-    python -c "from patinhas.app.security import get_password_hash; print(get_password_hash('admin123'))"
+    python -c "from app.security import get_password_hash; print(get_password_hash('admin123'))"
     ```
 
 2.  Execute o SQL no seu banco de dados:
