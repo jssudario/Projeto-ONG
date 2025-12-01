@@ -18,6 +18,10 @@ class AdotanteRepository:
     # Busca um único adotante por ID
     def get_by_id(self, adotante_id: int) -> Optional[adotante_model.Adotante]:
         return self.db.query(adotante_model.Adotante).get(adotante_id)
+    
+    # Busca um único adotante por email
+    def get_by_email(self, email: str) -> Optional[adotante_model.Adotante]:
+        return self.db.query(adotante_model.Adotante).filter(adotante_model.Adotante.email == email).first()
 
     # Cria um novo adotante no banco de dados
     def create(self, payload: adotante_schema.AdotanteCreate) -> adotante_model.Adotante:

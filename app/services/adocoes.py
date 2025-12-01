@@ -32,12 +32,20 @@ class AdocaoService:
 
     # Aplica a lógica de negócio para criar uma nova solicitação
     def create(self, payload: solicitacao_schema.SolicitacaoCreate): 
-        # Verifica se o animal existe
+    
+    # Verifica se o animal existe e se está disponível
         animal = self.animal_repo.get_by_id(payload.animal_id)
         if not animal:
             raise HTTPException(status_code=404, detail="Oops! Animal não encontrado. 🐾")
-
-        # Verifica se o adotante existe
+    
+        # REGRA DE NEGÓCIO: ANIMAL TEM QUE ESTAR DISPONÍVEL
+        if animal.status != "disponivel":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, 
+                detail=f"O animal '{animal.nome}' não está disponível para adoção (Status: {animal.status})."
+            )
+    
+    # Verifica se o adotante existe
         adotante = self.adotante_repo.get_by_id(payload.adotante_id)
         if not adotante:
             raise HTTPException(status_code=404, detail="Oops! Adotante não encontrado. 🐾")
