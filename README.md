@@ -1,8 +1,8 @@
-# Projeto ONG - Sistema de Gerenciamento de Adoção
+# Projeto Patinhas - Sistema de Gerenciamento de Adoção
 
 Este repositório contém o código-fonte de um sistema web completo para gerenciamento de adoção de animais, desenvolvido para Organizações Não Governamentais (ONGs). A plataforma utiliza uma arquitetura desacoplada, com uma API RESTful robusta no backend e uma interface responsiva no frontend.
 
-### [Video de apresentação no Youtube](https://www.youtube.com/watch?v=PwxMejScj_s)
+### [Video de apresentação no Youtube](https://www.youtube.com/watch?v=MH8f6-6-tGI)
 - Por favor, leia a breve descrição inserida antes de assistir o vídeo.
 
 ## Estrutura de Diretórios
